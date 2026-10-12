@@ -1,0 +1,261 @@
+/* ==========================================================================
+   塔羅網站設計系統 · Design Tokens  v1.1
+   名稱：「夜航 Night Passage」
+   理念：深靛夜空為底，黃銅金為唯一強調色，月石白為文字。
+         層次靠「表面明度 + 細邊框 + 陰影」三者一起遞進，不靠花俏裝飾。
+   預設深色；淺色主題用 [data-theme="light"] 或系統偏好切換。
+   所有元件只能引用這裡的變數，不得寫死色碼。
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ---------- 1. 色彩 · 基礎色盤（原始值，元件不要直接用） ---------- */
+  --ink-950: #080a14;
+  --ink-900: #0d1020;
+  --ink-850: #121630;
+  --ink-800: #181d3b;
+  --ink-700: #222848;
+  --ink-600: #2f3659;
+  --ink-500: #4a5178;
+  --ink-400: #6d7398;
+  --ink-300: #9a9fbd;
+  --ink-200: #c4c7da;
+  --ink-100: #e4e5ee;
+  --moon-50:  #f1eee6;
+
+  --brass-700: #6e5527;
+  --brass-600: #8a6c34;
+  --brass-500: #b08d4a;
+  --brass-400: #cfac68;
+  --brass-300: #e3c78f;
+
+  /* ---------- 2. 色彩 · 語意 token（元件用這組） ---------- */
+  /* 表面層次 L0 → L3：越上層越亮 */
+  --color-bg:            var(--ink-950);   /* L0 頁面底 */
+  --color-surface:       var(--ink-900);   /* L1 區塊、卡片 */
+  --color-surface-raised:var(--ink-850);   /* L2 浮起面板、解讀面板 */
+  --color-surface-overlay:var(--ink-800);  /* L3 彈窗、選單 */
+  --color-surface-sunken:#05060d;          /* 輸入框內凹 */
+  --color-scrim: rgb(4 5 12 / 0.72);       /* 彈窗遮罩 */
+
+  --color-border-subtle: rgb(196 199 218 / 0.08);
+  --color-border:        rgb(196 199 218 / 0.14);
+  --color-border-strong: rgb(196 199 218 / 0.26);
+
+  --color-text:          var(--moon-50);   /* 主要文字 */
+  --color-text-secondary:var(--ink-200);   /* 次要文字 */
+  --color-text-muted:    var(--ink-400);   /* 註解、placeholder */
+  --color-text-on-accent:var(--ink-950);   /* 金色按鈕上的字 */
+
+  --color-accent:        var(--brass-400); /* 唯一強調色：黃銅金 */
+  --color-accent-hover:  var(--brass-300);
+  --color-accent-press:  var(--brass-500);
+  --color-accent-soft:   rgb(207 172 104 / 0.12); /* 金色淡底 */
+  --color-accent-line:   rgb(207 172 104 / 0.38); /* 金色細線、牌框 */
+
+  --color-focus:         var(--brass-300);
+
+  /* 狀態色（只用於狀態，不當裝飾） */
+  --color-success: #8cc4a2;
+  --color-warning: #e2b06a;
+  --color-danger:  #e58a80;
+  --color-info:    #94afd6;
+
+  /* 四元素（星盤、牌組花色共用） */
+  --color-fire:  #e08a6b;  /* 火 · 權杖 · 牡羊 獅子 射手 */
+  --color-earth: #a9b98a;  /* 土 · 錢幣 · 金牛 處女 摩羯 */
+  --color-air:   #b6c3e0;  /* 風 · 寶劍 · 雙子 天秤 水瓶 */
+  --color-water: #7fa5cf;  /* 水 · 聖杯 · 巨蟹 天蠍 雙魚 */
+
+  /* 星盤相位線 */
+  --color-aspect-harmonious: rgb(127 165 207 / 0.7); /* 三分、六分 */
+  --color-aspect-tense:      rgb(229 138 128 / 0.7); /* 四分、對分 */
+  --color-aspect-neutral:    rgb(207 172 104 / 0.7); /* 合相 */
+
+  /* ---------- 3. 字體 ---------- */
+  --font-display: "Marcellus", "Noto Serif TC", "Songti TC", serif;      /* 拉丁標題、牌名 THE STAR */
+  --font-serif:   "Noto Serif TC", "Songti TC", "PMingLiU", serif;       /* 中文標題、解讀引言 */
+  --font-sans:    "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif; /* 內文、介面 */
+  --font-mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace; /* 度數、日期、數據 */
+  /* Google Fonts 一行載入：
+     https://fonts.googleapis.com/css2?family=Marcellus&family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap */
+
+  /* 字級（1.25 比例，基準 16px） */
+  --text-2xs: 0.6875rem; /* 11 角標、星座度數小字 */
+  --text-xs:  0.75rem;   /* 12 標籤 */
+  --text-sm:  0.875rem;  /* 14 說明、次要 */
+  --text-md:  1rem;      /* 16 內文 */
+  --text-lg:  1.25rem;   /* 20 小標 */
+  --text-xl:  1.5625rem; /* 25 區塊標題 */
+  --text-2xl: 1.9375rem; /* 31 頁面標題 */
+  --text-3xl: 2.4375rem; /* 39 首頁主標 */
+  --text-4xl: 3.0625rem; /* 49 只用一次：首頁 hero */
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-bold:    700;
+
+  --leading-tight: 1.2;   /* 標題 */
+  --leading-snug:  1.45;  /* 介面 */
+  --leading-body:  1.75;  /* 中文內文、解讀 */
+
+  --tracking-caps: 0.14em; /* 大寫拉丁、eyebrow */
+  --tracking-wide: 0.04em;
+
+  --measure: 34em;  /* 解讀內文最大寬（中文約 34 字） */
+
+  /* ---------- 4. 間距（4px 基準） ---------- */
+  --space-0: 0;
+  --space-1: 0.25rem;  /* 4  */
+  --space-2: 0.5rem;   /* 8  */
+  --space-3: 0.75rem;  /* 12 */
+  --space-4: 1rem;     /* 16 */
+  --space-5: 1.5rem;   /* 24 */
+  --space-6: 2rem;     /* 32 */
+  --space-7: 3rem;     /* 48 */
+  --space-8: 4rem;     /* 64 */
+  --space-9: 6rem;     /* 96 */
+
+  --gutter: clamp(1rem, 4vw, 2rem);  /* 頁面左右留白，手機最少 16px */
+  --container: 72rem;                /* 內容最大寬 1152 */
+  --container-narrow: 42rem;         /* 閱讀頁 */
+
+  /* ---------- 5. 圓角 ---------- */
+  --radius-xs: 4px;    /* 標籤、chip 內小件 */
+  --radius-sm: 8px;    /* 按鈕、輸入框 */
+  --radius-md: 12px;   /* 卡片、面板 */
+  --radius-lg: 20px;   /* 彈窗 */
+  --radius-card: 10px; /* 塔羅牌 */
+  --radius-pill: 999px;
+
+  /* ---------- 6. 層次（陰影 + 邊框，一級一級往上） ---------- */
+  --shadow-0: none;
+  --shadow-1: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --shadow-3: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 24px 48px -12px rgb(0 0 0 / 0.7);
+  --shadow-card: 0 2px 4px rgb(0 0 0 / 0.4), 0 18px 36px -14px rgb(0 0 0 / 0.75);
+  --glow-accent: 0 0 0 1px var(--color-accent-line), 0 0 28px -6px rgb(207 172 104 / 0.45); /* 選中的牌 */
+
+  /* ---------- 7. 動態 ---------- */
+  --dur-instant: 80ms;   /* 按壓 */
+  --dur-fast:    140ms;  /* hover、顏色 */
+  --dur-base:    220ms;  /* 展開、淡入 */
+  --dur-slow:    420ms;  /* 面板進場 */
+  --dur-flip:    720ms;  /* 翻牌 */
+  --dur-shuffle: 1200ms; /* 洗牌 */
+  --stagger:     90ms;   /* 牌陣逐張出現的間隔 */
+
+  --ease-out:    cubic-bezier(0.2, 0.7, 0.2, 1);   /* 進場 */
+  --ease-in:     cubic-bezier(0.5, 0, 0.75, 0);    /* 離場 */
+  --ease-in-out: cubic-bezier(0.6, 0, 0.3, 1);     /* 翻牌 */
+
+  /* ---------- 8. 塔羅牌尺寸（真實比例 70 × 120 mm = 7:12） ---------- */
+  --card-ratio: 7 / 12;
+  --card-w-sm: 4.5rem;   /* 牌堆、縮圖 72px */
+  --card-w-md: 8.5rem;   /* 牌陣 136px */
+  --card-w-lg: 13rem;    /* 單張詳解 208px */
+
+  /* ---------- 9. 層級 z-index ---------- */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-overlay: 1000;
+  --z-toast: 1100;
+}
+
+/* ---------- 淺色主題「晨霧 Dawn」：同結構，只換語意 token ---------- */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --color-bg: #eceef4;
+    --color-surface: #f6f7fa;
+    --color-surface-raised: #ffffff;
+    --color-surface-overlay: #ffffff;
+    --color-surface-sunken: #e3e6ee;
+    --color-scrim: rgb(18 22 48 / 0.4);
+    --color-border-subtle: rgb(24 29 59 / 0.07);
+    --color-border: rgb(24 29 59 / 0.13);
+    --color-border-strong: rgb(24 29 59 / 0.24);
+    --color-text: #141830;
+    --color-text-secondary: #3e4566;
+    --color-text-muted: #6d7398;
+    --color-text-on-accent: #ffffff;
+    --color-accent: #8a6c34;
+    --color-accent-hover: #6e5527;
+    --color-accent-press: #5a4520;
+    --color-accent-soft: rgb(138 108 52 / 0.1);
+    --color-accent-line: rgb(138 108 52 / 0.42);
+    --color-focus: #8a6c34;
+    --color-success: #2f7d55;
+    --color-warning: #9a6216;
+    --color-danger: #b4483d;
+    --color-info: #3d6aa3;
+    --color-fire: #b9532f;
+    --color-earth: #5f7a3a;
+    --color-air: #5a6c9a;
+    --color-water: #2f6aa3;
+    --shadow-1: 0 1px 2px rgb(20 24 48 / 0.08);
+    --shadow-2: 0 8px 24px -10px rgb(20 24 48 / 0.18);
+    --shadow-3: 0 24px 48px -16px rgb(20 24 48 / 0.28);
+    --shadow-card: 0 2px 4px rgb(20 24 48 / 0.1), 0 18px 36px -16px rgb(20 24 48 / 0.35);
+    --glow-accent: 0 0 0 1px var(--color-accent-line), 0 0 24px -6px rgb(138 108 52 / 0.4);
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #eceef4;
+  --color-surface: #f6f7fa;
+  --color-surface-raised: #ffffff;
+  --color-surface-overlay: #ffffff;
+  --color-surface-sunken: #e3e6ee;
+  --color-scrim: rgb(18 22 48 / 0.4);
+  --color-border-subtle: rgb(24 29 59 / 0.07);
+  --color-border: rgb(24 29 59 / 0.13);
+  --color-border-strong: rgb(24 29 59 / 0.24);
+  --color-text: #141830;
+  --color-text-secondary: #3e4566;
+  --color-text-muted: #6d7398;
+  --color-text-on-accent: #ffffff;
+  --color-accent: #8a6c34;
+  --color-accent-hover: #6e5527;
+  --color-accent-press: #5a4520;
+  --color-accent-soft: rgb(138 108 52 / 0.1);
+  --color-accent-line: rgb(138 108 52 / 0.42);
+  --color-focus: #8a6c34;
+  --color-success: #2f7d55;
+  --color-warning: #9a6216;
+  --color-danger: #b4483d;
+  --color-info: #3d6aa3;
+  --color-fire: #b9532f;
+  --color-earth: #5f7a3a;
+  --color-air: #5a6c9a;
+  --color-water: #2f6aa3;
+  --shadow-1: 0 1px 2px rgb(20 24 48 / 0.08);
+  --shadow-2: 0 8px 24px -10px rgb(20 24 48 / 0.18);
+  --shadow-3: 0 24px 48px -16px rgb(20 24 48 / 0.28);
+  --shadow-card: 0 2px 4px rgb(20 24 48 / 0.1), 0 18px 36px -16px rgb(20 24 48 / 0.35);
+  --glow-accent: 0 0 0 1px var(--color-accent-line), 0 0 24px -6px rgb(138 108 52 / 0.4);
+}
+
+/* 塔羅牌背在兩種主題下都維持深色（實體牌的質感），所以有獨立 token，不跟主題切換 */
+:root {
+  --card-back-bg: #10142b;
+  --card-back-ink: #cfac68;
+  --card-back-line: rgb(207 172 104 / 0.45);
+  --card-face-bg: #f3efe4;      /* 牌面紙色 */
+  --card-face-ink: #1a1e38;
+  --card-face-line: rgb(26 30 56 / 0.35);
+}
+
+/* 手機牌尺寸（v1.1 收錄自建置端） */
+@media (max-width: 48rem) {
+  :root { --card-w-sm: 3.25rem; --card-w-md: 6.25rem; --card-w-lg: 10rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms;
+    --dur-flip: 0ms; --dur-shuffle: 0ms; --stagger: 0ms;
+  }
+}

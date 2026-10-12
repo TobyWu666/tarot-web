@@ -1,0 +1,124 @@
+/* ==========================================================================
+   星語塔羅 · 頁面版型
+   只做排版與組合，顏色、字級、間距、圓角、陰影全部引用 design/tokens.css。
+   元件本體在 design/components.css，這裡不重新定義外觀。
+   ========================================================================== */
+
+[hidden] { display: none !important; }
+
+/* ---------- 頂部導覽：64px、L0 底、sticky ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: var(--z-sticky);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.topbar__inner { display: flex; align-items: center; gap: var(--space-5); min-height: 4rem; }
+.brand { display: flex; align-items: baseline; gap: var(--space-2); margin-right: auto; white-space: nowrap; }
+.brand b { font-family: var(--font-display); font-weight: var(--weight-regular); letter-spacing: var(--tracking-caps); font-size: var(--text-md); }
+.brand span { font-family: var(--font-serif); color: var(--color-text-muted); font-size: var(--text-sm); }
+.topbar__tabs { border-bottom: 0; align-self: stretch; align-items: stretch; }
+.topbar__tabs .tabs__tab { padding-block: 0; margin-bottom: -1px; }
+
+/* ---------- 頁面 ---------- */
+.page { padding-block: var(--space-7) var(--space-8); }
+.view { display: none; }
+.view.is-active { display: block; animation: fade var(--dur-base) var(--ease-out); }
+.page-head { display: grid; gap: var(--space-2); margin-bottom: var(--space-6); }
+.page-head--row { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); }
+.page-head--row > div { display: grid; gap: var(--space-2); }
+.section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-6); }
+.section-head > div { display: grid; gap: var(--space-2); }
+.narrow { max-width: var(--container-narrow); }
+.site-foot { font-size: var(--text-xs); padding-block: var(--space-5) var(--space-7); border-top: 1px solid var(--color-border-subtle); }
+
+/* ---------- 抽牌設定 ---------- */
+.setup { max-width: var(--container-narrow); }
+.setup__foot { gap: var(--space-5); }
+.setup__spacer { flex: 1; }
+.setup__hint { font-size: var(--text-sm); }
+.setup__meta { display: grid; gap: var(--space-1); }
+
+
+/* ---------- 牌陣與牌堆 ---------- */
+.draw { margin-top: var(--space-8); }
+.draw .spread { min-height: calc(var(--card-w-md) * 12 / 7 + 3rem); }
+.draw__actions { justify-content: center; margin-block: var(--space-6) var(--space-7); }
+.spread__slot .tarot { cursor: pointer; }
+.spread__label { text-align: center; }
+
+/* 牌堆：小牌重疊排列，可點的部分是每張露出的左側 */
+
+/* 凱爾特十字：大螢幕用 grid 排出十字＋權杖列 */
+@media (min-width: 64rem) {
+  .spread--celtic {
+    display: grid; grid-template-columns: repeat(5, var(--card-w-md));
+    gap: var(--space-4) var(--space-5); justify-content: center;
+  }
+  .spread--celtic .tarot, .spread--celtic .spread__empty { width: calc(var(--card-w-md) * 0.82); }
+  .spread--celtic > :nth-child(1)  { grid-area: 2 / 2; }
+  .spread--celtic > :nth-child(2)  { grid-area: 2 / 3; }
+  .spread--celtic > :nth-child(3)  { grid-area: 3 / 2; }
+  .spread--celtic > :nth-child(4)  { grid-area: 2 / 1; }
+  .spread--celtic > :nth-child(5)  { grid-area: 1 / 2; }
+  .spread--celtic > :nth-child(6)  { grid-area: 2 / 4; }
+  .spread--celtic > :nth-child(7)  { grid-area: 4 / 5; }
+  .spread--celtic > :nth-child(8)  { grid-area: 3 / 5; }
+  .spread--celtic > :nth-child(9)  { grid-area: 2 / 5; }
+  .spread--celtic > :nth-child(10) { grid-area: 1 / 5; }
+}
+.spread--single .tarot, .spread--single .spread__empty { width: var(--card-w-lg); }
+
+/* ---------- 結果 ---------- */
+.result { display: grid; gap: var(--space-6); margin-top: var(--space-7); max-width: var(--container-narrow); margin-inline: auto; animation: rise var(--dur-slow) var(--ease-out); }
+.meaning .tarot { cursor: pointer; }
+
+.reading__body .skeleton + .skeleton { margin-top: var(--space-3); }
+.reading__body .notice { max-width: none; }
+
+/* ---------- 星盤頁 ---------- */
+.chart-layout { display: grid; grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+.birth-form { position: sticky; top: calc(4rem + var(--space-5)); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.form-row--3 { margin-top: var(--space-3); }
+.form-row--3 > :last-child { grid-column: 1 / -1; }
+.input-group { display: flex; gap: var(--space-2); }
+.input-group .btn { flex: none; }
+.disclosure summary { cursor: pointer; font-size: var(--text-sm); color: var(--color-text-secondary); list-style-position: inside; }
+.disclosure summary:hover { color: var(--color-text); }
+.place-chip { cursor: pointer; background: none; font-family: var(--font-sans); }
+.place-chip:hover { border-color: var(--color-accent-line); color: var(--color-accent); }
+.empty-state { display: grid; place-items: center; min-height: 16rem; text-align: center; }
+.chart figcaption { font-size: var(--text-xs); }
+#chartWheel { width: 100%; display: grid; justify-items: center; }
+.chart__wheel { max-width: 30rem; }
+
+
+.element-bar { margin-bottom: var(--space-4); }
+.element-legend { gap: var(--space-2); }
+
+/* ---------- 紀錄 ---------- */
+.history-item .prose { margin-top: var(--space-4); }
+.history-item__foot { margin-top: var(--space-4); }
+
+/* ---------- 彈窗：原生 dialog 套 .modal.panel--overlay ---------- */
+.modal--wide { width: min(44rem, calc(100% - 2 * var(--gutter))); }
+.modal__foot { display: flex; justify-content: flex-end; margin-top: var(--space-5); }
+.modal__actions { margin-top: var(--space-2); }
+.card-detail { display: grid; grid-template-columns: var(--card-w-lg) 1fr; gap: var(--space-6); align-items: start; }
+
+.toast[hidden] { display: none; }
+
+/* ---------- 手機 ---------- */
+@media (max-width: 48rem) {
+  .topbar__inner { flex-wrap: wrap; gap: 0 var(--space-3); min-height: 0; padding-top: var(--space-3); }
+  .topbar__tabs { order: 3; flex: 0 0 100%; }
+  .topbar__tabs .tabs__tab { padding-block: var(--space-3); }
+  .page { padding-block: var(--space-6) var(--space-7); }
+  .chart-layout { grid-template-columns: 1fr; }
+  .birth-form { position: static; }
+  .form-row { grid-template-columns: 1fr; }
+  .card-detail { grid-template-columns: 1fr; justify-items: center; }
+  .spread { gap: var(--space-4) var(--space-3); }
+  .setup__foot .btn--primary { width: 100%; }
+  .setup__spacer { display: none; }
+}

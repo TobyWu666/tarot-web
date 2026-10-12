@@ -1,0 +1,523 @@
+/* ==========================================================================
+   塔羅網站設計系統 · Components  v1.1
+   依賴 tokens.css。只引用 token，不寫死色碼。
+   命名：元件 .name、子元素 .name__part、變體 .name--variant、狀態 .is-state
+   ========================================================================== */
+
+/* ---------- 基礎 ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+  margin: 0;
+}
+h1 { font-size: var(--text-2xl); }
+h2 { font-size: var(--text-xl); }
+h3 { font-size: var(--text-lg); }
+h4 { font-size: var(--text-md); }
+p  { margin: 0; }
+
+a { color: var(--color-accent); text-underline-offset: 0.2em; }
+a:hover { color: var(--color-accent-hover); }
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.container        { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+.container--narrow{ max-width: var(--container-narrow); }
+.stack   { display: flex; flex-direction: column; gap: var(--space-4); }
+.cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+
+/* 小標題：拉丁大寫 + 字距，放在區塊標題上方 */
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.text-muted     { color: var(--color-text-muted); }
+.text-secondary { color: var(--color-text-secondary); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* 分隔線：中間一顆小星，用在大區塊之間（一頁最多兩次） */
+.divider {
+  display: flex; align-items: center; gap: var(--space-3);
+  color: var(--color-accent-line);
+}
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--color-border); }
+.divider > span { font-size: var(--text-xs); color: var(--color-accent); }
+
+/* ---------- 按鈕 ---------- */
+.btn {
+  --_h: 2.75rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: var(--_h);
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font: var(--weight-medium) var(--text-sm)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wide);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              transform var(--dur-instant) var(--ease-out);
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* 主要：金底。一個畫面只放一顆（例：「抽牌」「開始解讀」） */
+.btn--primary { background: var(--color-accent); color: var(--color-text-on-accent); }
+.btn--primary:hover { background: var(--color-accent-hover); color: var(--color-text-on-accent); }
+.btn--primary:active { background: var(--color-accent-press); }
+
+/* 次要：金框 */
+.btn--secondary { background: transparent; color: var(--color-accent); border-color: var(--color-accent-line); }
+.btn--secondary:hover { background: var(--color-accent-soft); border-color: var(--color-accent); color: var(--color-accent-hover); }
+
+/* 幽靈：純文字，用於「重新洗牌」「取消」 */
+.btn--ghost { background: transparent; color: var(--color-text-secondary); }
+.btn--ghost:hover { background: var(--color-border-subtle); color: var(--color-text); }
+
+.btn--sm { --_h: 2.25rem; padding: 0 var(--space-4); font-size: var(--text-xs); }
+.btn--lg { --_h: 3.25rem; padding: 0 var(--space-6); font-size: var(--text-md); }
+.btn--icon { padding: 0; width: var(--_h); }
+
+.btn.is-loading { pointer-events: none; color: transparent; position: relative; }
+.btn.is-loading::after {
+  content: ""; position: absolute; width: 1em; height: 1em;
+  border: 2px solid currentColor; border-color: var(--color-text-on-accent) transparent var(--color-text-on-accent) transparent;
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+.btn--secondary.is-loading::after, .btn--ghost.is-loading::after { border-color: var(--color-accent) transparent var(--color-accent) transparent; }
+
+/* ---------- 表單 ---------- */
+.field { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.field__label { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+.field__hint  { font-size: var(--text-xs); color: var(--color-text-muted); }
+.field__error { font-size: var(--text-xs); color: var(--color-danger); }
+
+.input, .select, .textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font: var(--text-md)/var(--leading-snug) var(--font-sans);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.input[type="date"], .input[type="time"] { font-family: var(--font-mono); }
+.input::placeholder, .textarea::placeholder { color: var(--color-text-muted); }
+.input:hover, .select:hover, .textarea:hover { border-color: var(--color-border-strong); }
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+.field.is-invalid .input, .field.is-invalid .select { border-color: var(--color-danger); }
+.textarea { min-height: 6rem; resize: vertical; line-height: var(--leading-body); }
+
+/* 分段選擇器：血型 A / B / O / AB、牌陣選擇 */
+.segmented {
+  display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  padding: var(--space-1); gap: var(--space-1);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.segmented input { position: absolute; opacity: 0; pointer-events: none; }
+.segmented label {
+  display: grid; place-items: center;
+  min-height: 2.25rem; min-width: 3rem; padding: 0 var(--space-3);
+  border-radius: calc(var(--radius-sm) - 3px);
+  font: var(--weight-medium) var(--text-sm)/1 var(--font-mono);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+.segmented label:hover { color: var(--color-text); }
+.segmented input:checked + label { background: var(--color-accent-soft); color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent-line); }
+.segmented input:focus-visible + label { outline: 2px solid var(--color-focus); outline-offset: 1px; }
+
+/* ---------- 標籤 / Chip ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 0.2em 0.7em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.chip--accent { border-color: var(--color-accent-line); color: var(--color-accent); background: var(--color-accent-soft); }
+.chip__dot { width: 0.5em; height: 0.5em; border-radius: 50%; background: currentColor; }
+.chip--fire  { color: var(--color-fire); }
+.chip--earth { color: var(--color-earth); }
+.chip--air   { color: var(--color-air); }
+.chip--water { color: var(--color-water); }
+
+/* ---------- 面板（層次 L1 / L2 / L3） ---------- */
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  padding: var(--space-5);
+}
+.panel--raised  { background: var(--color-surface-raised); border-color: var(--color-border); box-shadow: var(--shadow-2); }
+.panel--overlay { background: var(--color-surface-overlay); border-color: var(--color-border); box-shadow: var(--shadow-3); border-radius: var(--radius-lg); }
+.panel__header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
+
+/* ---------- 分頁 Tabs（塔羅 / 星盤 / 血型） ---------- */
+.tabs { display: flex; gap: var(--space-5); border-bottom: 1px solid var(--color-border); overflow-x: auto; }
+.tabs__tab {
+  padding: var(--space-3) 0; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  color: var(--color-text-muted); font: var(--weight-medium) var(--text-sm)/1 var(--font-sans); cursor: pointer; white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.tabs__tab:hover { color: var(--color-text); }
+.tabs__tab[aria-selected="true"] { color: var(--color-text); border-bottom-color: var(--color-accent); }
+
+/* ==========================================================================
+   塔羅牌
+   結構：
+   <div class="tarot [tarot--sm|--lg] [is-flipped] [is-reversed] [is-selected]">
+     <div class="tarot__inner">
+       <div class="tarot__back"></div>
+       <div class="tarot__face">
+         <span class="tarot__numeral">XVII</span>
+         <div class="tarot__art"><img …></div>
+         <span class="tarot__name">THE STAR</span>
+         <span class="tarot__name-zh">星星</span>
+       </div>
+     </div>
+   </div>
+   預設顯示牌背；加 .is-flipped 翻到正面；.is-reversed 正面倒置（逆位）。
+   ========================================================================== */
+.tarot {
+  width: var(--card-w-md);
+  max-width: 100%;
+  aspect-ratio: var(--card-ratio);
+  perspective: 1200px;
+  flex-shrink: 0;
+}
+.tarot--sm { width: var(--card-w-sm); }
+.tarot--lg { width: var(--card-w-lg); }
+
+.tarot__inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--dur-flip) var(--ease-in-out);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+.tarot.is-flipped .tarot__inner { transform: rotateY(180deg); }
+
+.tarot__back, .tarot__face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+/* 牌背：深靛底 + 雙線金框 + 中央八芒星。兩種主題都不變。 */
+.tarot__back {
+  background:
+    radial-gradient(circle at 50% 50%, rgb(207 172 104 / 0.18) 0 14%, transparent 15%),
+    repeating-linear-gradient(45deg, transparent 0 9px, rgb(207 172 104 / 0.06) 9px 10px),
+    repeating-linear-gradient(-45deg, transparent 0 9px, rgb(207 172 104 / 0.06) 9px 10px),
+    var(--card-back-bg);
+  border: 1px solid var(--card-back-line);
+}
+.tarot__back::before { /* 內框 */
+  content: ""; position: absolute; inset: 6%;
+  border: 1px solid var(--card-back-line);
+  border-radius: calc(var(--radius-card) - 4px);
+  box-shadow: inset 0 0 0 3px var(--card-back-bg), inset 0 0 0 4px rgb(207 172 104 / 0.25);
+}
+.tarot__back::after { /* 八芒星 */
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 26%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  background: var(--card-back-ink);
+  clip-path: polygon(50% 0, 58% 34%, 85% 15%, 66% 42%, 100% 50%, 66% 58%, 85% 85%, 58% 66%, 50% 100%, 42% 66%, 15% 85%, 34% 58%, 0 50%, 34% 42%, 15% 15%, 42% 34%);
+}
+
+/* 牌面：紙色底 + 細內框，上方羅馬數字、中間圖、下方英文牌名 + 中文 */
+.tarot__face {
+  transform: rotateY(180deg);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: center;
+  padding: 7% 7% 6%;
+  gap: 3%;
+  background: var(--card-face-bg);
+  color: var(--card-face-ink);
+  border: 1px solid var(--card-face-line);
+}
+.tarot__face::before {
+  content: ""; position: absolute; inset: 4%;
+  border: 1px solid var(--card-face-line);
+  border-radius: calc(var(--radius-card) - 5px);
+  pointer-events: none;
+}
+.tarot__numeral { font-family: var(--font-display); font-size: max(0.55rem, 7cqw); letter-spacing: 0.1em; }
+.tarot__art {
+  width: 100%; min-height: 0;
+  border-radius: 3px; overflow: hidden;
+  background: linear-gradient(180deg, #1a1e38, #2f3659);
+}
+.tarot__art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tarot__name { font-family: var(--font-display); font-size: max(0.5rem, 7.5cqw); letter-spacing: var(--tracking-caps); text-align: center; line-height: 1.1; }
+.tarot__name-zh { font-family: var(--font-serif); font-size: max(0.5rem, 6.5cqw); opacity: 0.7; }
+.tarot { container-type: inline-size; }
+
+/* 逆位：只轉正面，牌背不動 */
+.tarot.is-reversed .tarot__face { transform: rotateY(180deg) rotate(180deg); }
+
+/* 互動：可點的牌（牌堆中）hover 上浮；選中加金光 */
+.tarot.is-interactive { cursor: pointer; }
+.tarot.is-interactive .tarot__inner { transition: transform var(--dur-flip) var(--ease-in-out), translate var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
+.tarot.is-interactive:hover .tarot__inner { translate: 0 -6px; }
+.tarot.is-selected .tarot__inner { box-shadow: var(--shadow-card), var(--glow-accent); translate: 0 -10px; }
+
+/* 進場：牌陣逐張發牌，用 style="--i: 0..n" 控制順序 */
+.tarot.is-dealing { animation: deal var(--dur-slow) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+
+/* 牌陣：每張牌下方有位置名稱（過去 / 現在 / 未來） */
+.spread { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-5); }
+.spread__slot { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.spread__label { font-size: var(--text-xs); color: var(--color-text-muted); letter-spacing: var(--tracking-wide); }
+.spread__label b { display: block; text-align: center; color: var(--color-text-secondary); font-weight: var(--weight-medium); }
+.spread__empty { /* 尚未抽的空位 */
+  width: var(--card-w-md); aspect-ratio: var(--card-ratio); max-width: 100%;
+  border: 1px dashed var(--color-border-strong); border-radius: var(--radius-card);
+}
+
+/* ==========================================================================
+   解讀面板（Gemini 輸出）
+   <article class="reading [is-streaming]">
+     <header class="reading__header"> eyebrow + 標題 + 來源 chips </header>
+     <div class="reading__body prose"> … </div>
+     <footer class="reading__footer"> 時間、重新解讀 </footer>
+   </article>
+   ========================================================================== */
+.reading {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
+.reading__header {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+.reading__sources { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.reading__body { padding: var(--space-5); }
+.reading__footer {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: var(--text-xs); color: var(--color-text-muted);
+}
+.reading.is-streaming .reading__body > :last-child::after {
+  content: ""; display: inline-block; width: 0.5em; height: 1.1em; margin-left: 2px; vertical-align: text-bottom;
+  background: var(--color-accent); animation: blink 1s steps(2) infinite;
+}
+
+/* 解讀內文排版 */
+.prose { max-width: var(--measure); line-height: var(--leading-body); color: var(--color-text-secondary); }
+.prose > * + * { margin-top: var(--space-4); }
+.prose h3 { color: var(--color-text); font-size: var(--text-lg); margin-top: var(--space-6); }
+.prose h3:first-child { margin-top: 0; }
+.prose strong { color: var(--color-text); font-weight: var(--weight-medium); }
+.prose blockquote { /* 一句總結：用襯線、金色細線 */
+  margin: var(--space-5) 0 0; padding: var(--space-1) 0 var(--space-1) var(--space-4);
+  border-left: 1px solid var(--color-accent-line);
+  font-family: var(--font-serif); font-size: var(--text-lg); line-height: var(--leading-snug); color: var(--color-text);
+}
+.prose ul { padding-left: 1.2em; }
+.prose li::marker { color: var(--color-accent); }
+
+/* 載入中骨架 */
+.skeleton {
+  display: block; height: 0.9em; border-radius: var(--radius-xs);
+  background: linear-gradient(90deg, var(--color-border-subtle), var(--color-border), var(--color-border-subtle));
+  background-size: 200% 100%; animation: shimmer 1.6s linear infinite;
+}
+
+/* ==========================================================================
+   星盤
+   <figure class="chart"> <svg class="chart__wheel"> … </svg> <figcaption> </figure>
+   SVG 內用以下 class：
+   .chart__ring     外圈線   .chart__sign 星座符號（加 --fire/--earth/--air/--water）
+   .chart__house    宮位線   .chart__house-num 宮位數字
+   .chart__planet   行星符號 .chart__aspect--harmonious / --tense / --neutral 相位線
+   .chart__axis     ASC/MC 主軸
+   ========================================================================== */
+.chart { margin: 0; display: grid; justify-items: center; gap: var(--space-4); }
+.chart__wheel { width: 100%; max-width: 26rem; height: auto; overflow: visible; }
+.chart__ring  { fill: none; stroke: var(--color-border-strong); stroke-width: 1; }
+.chart__ring--zodiac { fill: var(--color-surface); }
+.chart__house { stroke: var(--color-border); stroke-width: 1; }
+.chart__axis  { stroke: var(--color-accent); stroke-width: 1.5; }
+.chart__sign  { font-family: var(--font-mono); font-size: 13px; text-anchor: middle; dominant-baseline: central; fill: var(--color-text-secondary); }
+.chart__sign--fire  { fill: var(--color-fire); }
+.chart__sign--earth { fill: var(--color-earth); }
+.chart__sign--air   { fill: var(--color-air); }
+.chart__sign--water { fill: var(--color-water); }
+.chart__house-num { font-family: var(--font-mono); font-size: 9px; text-anchor: middle; dominant-baseline: central; fill: var(--color-text-muted); }
+.chart__planet { font-family: var(--font-mono); font-size: 14px; text-anchor: middle; dominant-baseline: central; fill: var(--color-text); }
+.chart__planet-dot { fill: var(--color-accent); }
+.chart__aspect { stroke-width: 1; fill: none; }
+.chart__aspect--harmonious { stroke: var(--color-aspect-harmonious); }
+.chart__aspect--tense      { stroke: var(--color-aspect-tense); stroke-dasharray: 3 3; }
+.chart__aspect--neutral    { stroke: var(--color-aspect-neutral); }
+.chart__axis-label { font-family: var(--font-display); font-size: 10px; letter-spacing: 0.1em; fill: var(--color-accent); text-anchor: middle; dominant-baseline: central; }
+
+/* 行星位置表 */
+.data-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.data-table th { text-align: left; font-weight: var(--weight-medium); font-size: var(--text-xs); color: var(--color-text-muted); letter-spacing: var(--tracking-wide); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border); }
+.data-table td { padding: var(--space-3); border-bottom: 1px solid var(--color-border-subtle); color: var(--color-text-secondary); }
+.data-table td:first-child { color: var(--color-text); }
+.data-table .mono { color: var(--color-text); }
+.table-scroll { overflow-x: auto; }
+
+/* 元素比例條（火土風水） */
+.element-bar { display: flex; height: 6px; border-radius: var(--radius-pill); overflow: hidden; gap: 2px; }
+.element-bar > span { display: block; }
+.element-bar .fire  { background: var(--color-fire); }
+.element-bar .earth { background: var(--color-earth); }
+.element-bar .air   { background: var(--color-air); }
+.element-bar .water { background: var(--color-water); }
+
+/* ---------- 彈窗 / 提示 ---------- */
+.scrim { position: fixed; inset: 0; background: var(--color-scrim); z-index: var(--z-overlay); display: grid; place-items: center; padding: var(--gutter); animation: fade var(--dur-base) var(--ease-out); }
+.modal { width: min(32rem, 100%); animation: rise var(--dur-slow) var(--ease-out); }
+.toast {
+  position: fixed; inset-inline: 0; margin-inline: auto; width: fit-content; max-width: calc(100% - 2 * var(--gutter));
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px)); z-index: var(--z-toast);
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm);
+  background: var(--color-surface-overlay); border: 1px solid var(--color-border); box-shadow: var(--shadow-3);
+  font-size: var(--text-sm); animation: rise var(--dur-base) var(--ease-out);
+}
+.notice { /* 頁內提示：錯誤、Key 用完等 */
+  display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-surface);
+  font-size: var(--text-sm); color: var(--color-text-secondary);
+}
+.notice::before { content: ""; flex: 0 0 3px; border-radius: 2px; background: var(--color-info); }
+.notice--danger::before  { background: var(--color-danger); }
+.notice--warning::before { background: var(--color-warning); }
+.notice--success::before { background: var(--color-success); }
+
+/* ==========================================================================
+   v1.1 收錄：建置端組出的元件，審查後正式納入
+   ========================================================================== */
+
+/* 開關：原生 checkbox，金色勾選（「包含逆位」「結合星盤與血型」） */
+.toggle { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-secondary); cursor: pointer; }
+.toggle input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--color-accent); }
+
+/* 分段選擇器可換行版：選項多（牌陣種類）時用；文字為中文，改用黑體 */
+.segmented--wrap { display: grid; grid-auto-flow: row; grid-template-columns: repeat(6, auto); justify-content: start; }
+.segmented--wrap label { font-family: var(--font-sans); }
+@media (max-width: 48rem) { .segmented--wrap { grid-template-columns: repeat(3, 1fr); width: 100%; } }
+
+/* 牌堆：小牌重疊，每張露出左側 38% 可點 */
+.deck {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  row-gap: var(--space-3);
+  padding-left: calc(var(--card-w-sm) * 0.62);
+}
+.deck .tarot { margin-left: calc(var(--card-w-sm) * -0.62); transition: opacity var(--dur-base) var(--ease-out); }
+.deck .tarot.is-taken { opacity: 0; pointer-events: none; }
+.deck.is-complete { display: none; }
+.deck.is-shuffling .tarot { animation: deal var(--dur-slow) var(--ease-out) both; animation-delay: calc(var(--i, 0) * (var(--dur-shuffle) / 78)); }
+
+/* 單張牌義列：左小牌、右位置／牌名／牌義 */
+.meaning-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-5); }
+.meaning { display: grid; grid-template-columns: var(--card-w-sm) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.meaning + .meaning { padding-top: var(--space-5); border-top: 1px solid var(--color-border-subtle); }
+.meaning__pos { font-size: var(--text-xs); color: var(--color-text-muted); letter-spacing: var(--tracking-wide); }
+.meaning__title { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-block: var(--space-1) var(--space-2); }
+.meaning__text { color: var(--color-text-secondary); line-height: var(--leading-body); }
+
+/* 解讀追問：使用者問題泡泡 + 追問輸入列
+   v1.1 修改：問題泡泡改用中性 L1 面，金色只留給可操作的東西 */
+.reading__thread { padding: 0 var(--space-5) var(--space-5); display: grid; gap: var(--space-5); }
+.reading__thread:empty { display: none; }
+.reading__q {
+  justify-self: end; max-width: 80%;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md) var(--radius-md) var(--radius-xs) var(--radius-md);
+  font-size: var(--text-sm); color: var(--color-text);
+}
+.reading__ask { display: flex; gap: var(--space-2); padding: 0 var(--space-5) var(--space-5); }
+.reading__ask .btn { flex: none; white-space: nowrap; }
+
+/* 星盤三要素：太陽／月亮／上升 */
+.big3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--space-3); }
+.big3__item { display: grid; gap: var(--space-2); align-content: start; }
+.big3__label { font-size: var(--text-xs); color: var(--color-text-muted); letter-spacing: var(--tracking-wide); }
+.big3__sign { font-family: var(--font-serif); font-size: var(--text-lg); font-weight: var(--weight-bold); }
+.big3__text { font-size: var(--text-sm); color: var(--color-text-secondary); line-height: var(--leading-body); }
+
+/* 相位列表與線型標記（與星盤相位線同樣式） */
+.aspect-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.aspect-list li { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; font-size: var(--text-sm); color: var(--color-text-secondary); }
+.aspect-list li + li { border-top: 1px solid var(--color-border-subtle); }
+.aspect-mark { display: inline-block; width: 1rem; height: 0; margin-right: var(--space-2); vertical-align: middle; border-top: 1px solid var(--color-aspect-neutral); }
+.aspect-mark--harmonious { border-top-color: var(--color-aspect-harmonious); }
+.aspect-mark--tense { border-top: 1px dashed var(--color-aspect-tense); }
+
+/* 逆行標記 R：v1.1 修改，用 muted 而非 danger（逆行不是錯誤） */
+.retro { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-text-muted); margin-left: var(--space-1); vertical-align: super; }
+
+/* 紀錄項目：<details class="history-item panel"> */
+.history-item summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-4); align-items: center; }
+.history-item summary::-webkit-details-marker { display: none; }
+.history-item[open] summary { margin-bottom: var(--space-2); }
+.history-item__q { font-family: var(--font-serif); font-weight: var(--weight-bold); }
+.history-item__cards { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-block: var(--space-4); }
+.history-item__cards .tarot { --card-w-sm: 3rem; }
+@media (max-width: 48rem) {
+  .history-item summary { grid-template-columns: minmax(0, 1fr) auto; }
+  .history-item summary .mono { grid-column: 1 / -1; }
+}
+
+/* 原生 dialog 彈窗 */
+dialog.modal { color: var(--color-text); margin: auto; max-height: calc(100dvh - 2 * var(--gutter)); overflow: auto; }
+dialog.modal::backdrop { background: var(--color-scrim); }
+
+/* ---------- 動畫 ---------- */
+@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes blink   { 50% { opacity: 0; } }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes fade    { from { opacity: 0; } }
+@keyframes rise    { from { opacity: 0; translate: 0 12px; } }
+@keyframes deal    { from { opacity: 0; translate: 0 -24px; rotate: -4deg; } }

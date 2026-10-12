@@ -1,0 +1,392 @@
+<title>夜航設計系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  /* 參考頁自己的版面（不屬於設計系統） */
+  .ref-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: var(--z-sticky); background: var(--color-bg); border-bottom: 1px solid var(--color-border-subtle); }
+  .ref-top .container { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 4rem; }
+  .brand { display: flex; align-items: baseline; gap: var(--space-2); }
+  .brand b { font-family: var(--font-display); font-weight: 400; letter-spacing: var(--tracking-caps); font-size: var(--text-md); }
+  .brand span { font-family: var(--font-serif); color: var(--color-text-muted); font-size: var(--text-sm); }
+  main.container { display: flex; flex-direction: column; gap: var(--space-8); padding-block: var(--space-7) var(--space-9); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-7); align-items: center; }
+  .hero h1 { font-size: clamp(var(--text-2xl), 6vw, var(--text-4xl)); }
+  .hero p { max-width: var(--measure); color: var(--color-text-secondary); line-height: var(--leading-body); margin-top: var(--space-4); }
+  .hero-cards { display: flex; gap: var(--space-3); align-items: flex-end; }
+  .hero-cards .tarot:nth-child(2) { translate: 0 -16px; }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; } .hero-cards { justify-content: center; } }
+  @media (max-width: 520px) { .hero-cards .tarot:not(.tarot--lg) { display: none; } }
+  section { display: flex; flex-direction: column; gap: var(--space-5); }
+  .sec-head { display: flex; flex-direction: column; gap: var(--space-2); max-width: 40rem; }
+  .sec-head p { color: var(--color-text-secondary); line-height: var(--leading-body); font-size: var(--text-sm); }
+  .grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); }
+  .grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--space-5); align-items: start; }
+  .swatch { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+  .swatch__chip { height: 3.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border); }
+  .swatch__name { font: var(--text-xs)/1.3 var(--font-mono); color: var(--color-text); word-break: break-all; }
+  .swatch__val { font: var(--text-2xs)/1.3 var(--font-mono); color: var(--color-text-muted); }
+  .type-row { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: var(--space-4); align-items: baseline; padding-block: var(--space-3); border-bottom: 1px solid var(--color-border-subtle); }
+  .type-row code { font: var(--text-2xs)/1.4 var(--font-mono); color: var(--color-text-muted); }
+  .layers { position: relative; padding: var(--space-5); background: var(--color-bg); border: 1px dashed var(--color-border); border-radius: var(--radius-md); }
+  .layers .panel { padding: var(--space-4); }
+  .layers .panel > .panel { margin-top: var(--space-4); }
+  .layer-tag { font: var(--text-2xs)/1 var(--font-mono); color: var(--color-text-muted); }
+  .scale { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-3); }
+  .scale > div { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); font: var(--text-2xs)/1 var(--font-mono); color: var(--color-text-muted); }
+  .scale i { display: block; background: var(--color-accent-soft); border: 1px solid var(--color-accent-line); }
+  .card-states { display: flex; flex-wrap: wrap; gap: var(--space-6); align-items: flex-start; }
+  .card-states figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+  .card-states figcaption { font-size: var(--text-xs); color: var(--color-text-muted); text-align: center; }
+  .card-states figcaption code { font-family: var(--font-mono); color: var(--color-text-secondary); }
+  .birth-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+  .birth-form .span-2 { grid-column: span 2; }
+  @media (max-width: 480px) { .birth-form { grid-template-columns: 1fr; } .birth-form .span-2 { grid-column: auto; } }
+  .tarot__art svg { width: 100%; height: 100%; display: block; }
+  .example-note { font-size: var(--text-xs); color: var(--color-text-muted); }
+  .chart-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--space-6); align-items: center; }
+  @media (max-width: 800px) { .chart-layout { grid-template-columns: 1fr; } }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .legend i { width: 1.25rem; height: 0; border-top: 1.5px solid; }
+  .motion-table td:nth-child(2) { font-family: var(--font-mono); }
+</style>
+
+<header class="ref-top">
+  <div class="container">
+    <div class="brand"><b>NIGHT PASSAGE</b><span>夜航設計系統 v1.0</span></div>
+    <div class="cluster">
+      <div class="segmented" role="radiogroup" aria-label="主題">
+        <input type="radio" name="theme" id="theme-auto" value="auto" checked><label for="theme-auto">系統</label>
+        <input type="radio" name="theme" id="theme-dark" value="dark"><label for="theme-dark">夜航</label>
+        <input type="radio" name="theme" id="theme-light" value="light"><label for="theme-light">晨霧</label>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="hero" aria-label="簡介">
+    <div>
+      <div class="eyebrow">Design Language</div>
+      <h1>深靛為夜，黃銅為光</h1>
+      <p>塔羅、星盤、血型三種解讀共用同一套語言。一個強調色、四層表面明度、四種字體各司其職；只有洗牌、發牌、翻牌這三個儀式動作有完整動畫。下方每個元件都是 <code class="mono">components.css</code> 的實際樣子。</p>
+    </div>
+    <div class="hero-cards" aria-hidden="true">
+      <div class="tarot"><div class="tarot__inner"><div class="tarot__back"></div></div></div>
+      <div class="tarot tarot--lg is-flipped"><div class="tarot__inner"><div class="tarot__back"></div>
+        <div class="tarot__face"><span class="tarot__numeral">XVII</span><div class="tarot__art" data-art="star"></div><span class="tarot__name">THE STAR</span><span class="tarot__name-zh">星星</span></div></div></div>
+      <div class="tarot"><div class="tarot__inner"><div class="tarot__back"></div></div></div>
+    </div>
+  </section>
+
+  <section id="color">
+    <div class="sec-head"><div class="eyebrow">Color</div><h2>色彩</h2><p>元件只使用語意 token。數值會跟著右上角的主題切換即時更新。</p></div>
+    <h3>表面與文字</h3>
+    <div class="grid" data-swatches="--color-bg,--color-surface,--color-surface-raised,--color-surface-overlay,--color-surface-sunken,--color-text,--color-text-secondary,--color-text-muted"></div>
+    <h3>強調與狀態</h3>
+    <div class="grid" data-swatches="--color-accent,--color-accent-hover,--color-accent-soft,--color-accent-line,--color-success,--color-warning,--color-danger,--color-info"></div>
+    <h3>四元素</h3>
+    <div class="grid" data-swatches="--color-fire,--color-earth,--color-air,--color-water"></div>
+  </section>
+
+  <section id="type">
+    <div class="sec-head"><div class="eyebrow">Typography</div><h2>字體</h2><p>Marcellus 給拉丁標題與牌名，思源宋體給中文標題與總結句，思源黑體給內文，IBM Plex Mono 給度數與日期。</p></div>
+    <div>
+      <div class="type-row"><code>4xl / display</code><span style="font: var(--text-4xl)/1.1 var(--font-display); letter-spacing: 0.06em">THE STAR</span></div>
+      <div class="type-row"><code>2xl / serif</code><span style="font: var(--weight-bold) var(--text-2xl)/1.2 var(--font-serif)">今晚的三張牌</span></div>
+      <div class="type-row"><code>xl / serif</code><span style="font: var(--weight-bold) var(--text-xl)/1.2 var(--font-serif)">你的太陽在天秤</span></div>
+      <div class="type-row"><code>lg / serif</code><span style="font: var(--weight-medium) var(--text-lg)/1.4 var(--font-serif)">放下對結果的執著，答案會自己浮現。</span></div>
+      <div class="type-row"><code>md / sans</code><span style="line-height: var(--leading-body); color: var(--color-text-secondary)">星星牌出現在現在的位置，代表一段消耗之後的復原期。你不需要急著做決定。</span></div>
+      <div class="type-row"><code>sm / sans</code><span style="font-size: var(--text-sm); color: var(--color-text-secondary)">用來計算太陽、月亮與上升星座</span></div>
+      <div class="type-row"><code>xs / eyebrow</code><span class="eyebrow">Three-card spread</span></div>
+      <div class="type-row"><code>sm / mono</code><span class="mono" style="font-size: var(--text-sm)">1998-10-13 · 14:25 · ☉ 19°42′ ♎︎</span></div>
+    </div>
+  </section>
+
+  <section id="layout">
+    <div class="sec-head"><div class="eyebrow">Space · Radius · Elevation</div><h2>間距、圓角與層次</h2><p>越靠近使用者的面越亮：底色亮一階、邊框強一階、陰影大一階。</p></div>
+    <div class="grid--2 grid">
+      <div class="layers">
+        <span class="layer-tag">L0 · --color-bg</span>
+        <div class="panel" style="margin-top: var(--space-3)"><span class="layer-tag">L1 · .panel</span>
+          <div class="panel panel--raised"><span class="layer-tag">L2 · .panel--raised（解讀面板）</span>
+            <div class="panel panel--overlay"><span class="layer-tag">L3 · .panel--overlay（彈窗）</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="stack">
+        <h4>間距 · 4px 基準</h4>
+        <div class="scale">
+          <div><i style="width: var(--space-1); height: var(--space-1)"></i>1</div>
+          <div><i style="width: var(--space-2); height: var(--space-2)"></i>2</div>
+          <div><i style="width: var(--space-3); height: var(--space-3)"></i>3</div>
+          <div><i style="width: var(--space-4); height: var(--space-4)"></i>4</div>
+          <div><i style="width: var(--space-5); height: var(--space-5)"></i>5</div>
+          <div><i style="width: var(--space-6); height: var(--space-6)"></i>6</div>
+          <div><i style="width: var(--space-7); height: var(--space-7)"></i>7</div>
+          <div><i style="width: var(--space-8); height: var(--space-8)"></i>8</div>
+        </div>
+        <h4>圓角</h4>
+        <div class="scale">
+          <div><i style="width: 3rem; height: 2rem; border-radius: var(--radius-xs)"></i>xs 4</div>
+          <div><i style="width: 3rem; height: 2rem; border-radius: var(--radius-sm)"></i>sm 8</div>
+          <div><i style="width: 3rem; height: 2rem; border-radius: var(--radius-md)"></i>md 12</div>
+          <div><i style="width: 3rem; height: 2rem; border-radius: var(--radius-lg)"></i>lg 20</div>
+          <div><i style="width: 2rem; height: 3.43rem; border-radius: var(--radius-card)"></i>card 10</div>
+          <div><i style="width: 4rem; height: 2rem; border-radius: var(--radius-pill)"></i>pill</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="controls">
+    <div class="sec-head"><div class="eyebrow">Controls</div><h2>按鈕與表單</h2><p>一個畫面只放一顆金色主按鈕。血型用分段選擇器，不用下拉選單。</p></div>
+    <div class="grid grid--2">
+      <div class="panel stack">
+        <div class="cluster"><button class="btn btn--primary">抽三張牌</button><button class="btn btn--secondary">換牌陣</button><button class="btn btn--ghost">重新洗牌</button></div>
+        <div class="cluster"><button class="btn btn--primary btn--lg">開始解讀</button><button class="btn btn--secondary btn--sm">看星盤</button><button class="btn btn--primary is-loading" aria-label="解讀中">開始解讀</button><button class="btn btn--secondary" disabled>無法使用</button></div>
+        <div class="cluster"><span class="chip chip--accent">塔羅 · 三張</span><span class="chip">星盤</span><span class="chip">血型 O</span><span class="chip">逆位</span><span class="chip chip--fire"><i class="chip__dot"></i>火</span><span class="chip chip--earth"><i class="chip__dot"></i>土</span><span class="chip chip--air"><i class="chip__dot"></i>風</span><span class="chip chip--water"><i class="chip__dot"></i>水</span></div>
+        <div class="tabs" role="tablist"><button class="tabs__tab" role="tab" aria-selected="true">塔羅</button><button class="tabs__tab" role="tab" aria-selected="false">星盤</button><button class="tabs__tab" role="tab" aria-selected="false">血型</button></div>
+      </div>
+      <form class="panel birth-form" onsubmit="event.preventDefault()">
+        <div class="field span-2"><label class="field__label" for="q">你想問什麼</label><input class="input" id="q" placeholder="例：這份工作該不該接？"></div>
+        <div class="field"><label class="field__label" for="bd">出生日期</label><input class="input" type="date" id="bd" value="1998-10-13"></div>
+        <div class="field"><label class="field__label" for="bt">出生時間</label><input class="input" type="time" id="bt" value="14:25"></div>
+        <div class="field span-2 is-invalid"><label class="field__label" for="bp">出生地</label><input class="input" id="bp" value="台北"><span class="field__error">找不到這個地點，請輸入城市名稱，例如「台北市」</span></div>
+        <div class="field span-2"><span class="field__label" id="blood-l">血型</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="blood-l">
+            <input type="radio" name="blood" id="b-a"><label for="b-a">A</label>
+            <input type="radio" name="blood" id="b-b"><label for="b-b">B</label>
+            <input type="radio" name="blood" id="b-o" checked><label for="b-o">O</label>
+            <input type="radio" name="blood" id="b-ab"><label for="b-ab">AB</label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="tarot">
+    <div class="sec-head"><div class="eyebrow">Tarot Card</div><h2>塔羅牌</h2><p>比例 7:12，照實體牌 70 × 120 mm。牌背兩種主題都維持深色。點最右邊的牌可以看翻牌動畫。</p></div>
+    <div class="card-states">
+      <figure><div class="tarot"><div class="tarot__inner"><div class="tarot__back"></div></div></div><figcaption>牌背<br><code>.tarot</code></figcaption></figure>
+      <figure><div class="tarot is-flipped"><div class="tarot__inner"><div class="tarot__back"></div><div class="tarot__face"><span class="tarot__numeral">XIX</span><div class="tarot__art" data-art="sun"></div><span class="tarot__name">THE SUN</span><span class="tarot__name-zh">太陽</span></div></div></div><figcaption>正位<br><code>.is-flipped</code></figcaption></figure>
+      <figure><div class="tarot is-flipped is-reversed"><div class="tarot__inner"><div class="tarot__back"></div><div class="tarot__face"><span class="tarot__numeral">XVIII</span><div class="tarot__art" data-art="moon"></div><span class="tarot__name">THE MOON</span><span class="tarot__name-zh">月亮</span></div></div></div><figcaption>逆位<br><code>.is-reversed</code></figcaption></figure>
+      <figure><div class="tarot is-interactive is-selected"><div class="tarot__inner"><div class="tarot__back"></div></div></div><figcaption>選中<br><code>.is-selected</code></figcaption></figure>
+      <figure><div class="tarot is-interactive" id="flip-demo" tabindex="0" role="button" aria-label="翻牌示範"><div class="tarot__inner"><div class="tarot__back"></div><div class="tarot__face"><span class="tarot__numeral">XVII</span><div class="tarot__art" data-art="star"></div><span class="tarot__name">THE STAR</span><span class="tarot__name-zh">星星</span></div></div></div><figcaption>點我翻牌<br><code>.is-interactive</code></figcaption></figure>
+    </div>
+    <div class="cluster" style="align-items: flex-end">
+      <div class="tarot tarot--sm"><div class="tarot__inner"><div class="tarot__back"></div></div></div>
+      <div class="tarot"><div class="tarot__inner"><div class="tarot__back"></div></div></div>
+      <div class="tarot tarot--lg"><div class="tarot__inner"><div class="tarot__back"></div></div></div>
+      <span class="example-note">sm 72px · md 136px · lg 208px</span>
+    </div>
+
+    <div class="panel stack" style="align-items: center">
+      <div class="panel__header" style="width: 100%"><div><div class="eyebrow">Three-card spread</div><h3>牌陣 · 過去 現在 未來</h3></div><button class="btn btn--ghost btn--sm" id="deal">重新發牌</button></div>
+      <div class="spread" id="spread">
+        <div class="spread__slot"><div class="tarot is-flipped is-dealing" style="--i:0"><div class="tarot__inner"><div class="tarot__back"></div><div class="tarot__face"><span class="tarot__numeral">XVIII</span><div class="tarot__art" data-art="moon"></div><span class="tarot__name">THE MOON</span><span class="tarot__name-zh">月亮</span></div></div></div><span class="spread__label"><b>過去</b>The Past</span></div>
+        <div class="spread__slot"><div class="tarot is-flipped is-dealing" style="--i:1"><div class="tarot__inner"><div class="tarot__back"></div><div class="tarot__face"><span class="tarot__numeral">XVII</span><div class="tarot__art" data-art="star"></div><span class="tarot__name">THE STAR</span><span class="tarot__name-zh">星星</span></div></div></div><span class="spread__label"><b>現在</b>The Present</span></div>
+        <div class="spread__slot"><div class="tarot is-flipped is-reversed is-dealing" style="--i:2"><div class="tarot__inner"><div class="tarot__back"></div><div class="tarot__face"><span class="tarot__numeral">XIX</span><div class="tarot__art" data-art="sun"></div><span class="tarot__name">THE SUN</span><span class="tarot__name-zh">太陽</span></div></div></div><span class="spread__label"><b>未來</b>The Future</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reading">
+    <div class="sec-head"><div class="eyebrow">Reading Panel</div><h2>解讀面板</h2><p>Gemini 的輸出放在 L2 面板。建議請模型回傳：每個主題一個小標、段落，最後一句總結。以下內容是示範。</p></div>
+    <div class="grid grid--2">
+      <article class="reading">
+        <header class="reading__header">
+          <div class="eyebrow">Reading</div>
+          <h3>這份工作該不該接？</h3>
+          <div class="reading__sources"><span class="chip chip--accent">塔羅 · 三張</span><span class="chip">星盤 · 太陽天秤</span><span class="chip">血型 O</span></div>
+        </header>
+        <div class="reading__body prose">
+          <h3>過去：月亮</h3>
+          <p>前一段時間你在資訊不足的情況下做選擇，很多擔心來自想像，而不是事實。</p>
+          <h3>現在：星星</h3>
+          <p>你正處在<strong>恢復期</strong>。天秤的太陽讓你習慣先顧及別人的感受，這張牌提醒你先把自己的需求說清楚。</p>
+          <h3>未來：太陽（逆位）</h3>
+          <p>結果是好的，但不會像你期待的那麼快。O 型的行動力是優勢，記得給自己留緩衝。</p>
+          <blockquote>可以接，但先談清楚你需要的條件。</blockquote>
+        </div>
+        <footer class="reading__footer"><span class="mono">2026-10-11 · 02:14</span><button class="btn btn--ghost btn--sm">重新解讀</button></footer>
+      </article>
+      <div class="stack">
+        <article class="reading is-streaming">
+          <header class="reading__header"><div class="eyebrow">Reading</div><h3>逐字輸出中</h3></header>
+          <div class="reading__body prose"><p>星星牌出現在現在的位置，代表一段消耗之後的復原期</p></div>
+        </article>
+        <article class="reading">
+          <header class="reading__header"><div class="eyebrow">Reading</div><h3>等待第一個字</h3></header>
+          <div class="reading__body stack" style="gap: var(--space-3)"><span class="skeleton" style="width: 90%"></span><span class="skeleton"></span><span class="skeleton" style="width: 75%"></span></div>
+        </article>
+        <div class="notice notice--danger"><div>今天的解讀額度用完了。牌陣已經保存，明天可以直接重新解讀。</div></div>
+        <div class="notice notice--success"><div>已複製解讀內容。</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="chart">
+    <div class="sec-head"><div class="eyebrow">Natal Chart</div><h2>星盤</h2><p>上升點固定在左側，黃道逆時針排列。星座用元素色，行星以小金點標出實際度數。以下為示範盤（1998-10-13 14:25 台北，數值為示意）。</p></div>
+    <div class="panel chart-layout">
+      <figure class="chart">
+        <svg class="chart__wheel" id="wheel" viewBox="-20 -20 440 440" role="img" aria-label="示範星盤"></svg>
+        <figcaption class="legend">
+          <span><i style="border-color: var(--color-aspect-harmonious)"></i>三分 · 六分</span>
+          <span><i style="border-color: var(--color-aspect-tense); border-top-style: dashed"></i>四分 · 對分</span>
+          <span><i style="border-color: var(--color-aspect-neutral)"></i>合相</span>
+        </figcaption>
+      </figure>
+      <div class="stack">
+        <div class="table-scroll">
+          <table class="data-table" id="planet-table"><thead><tr><th>行星</th><th>星座</th><th>度數</th><th>宮位</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="stack" style="gap: var(--space-2)">
+          <div class="cluster" style="justify-content: space-between"><span class="field__label">元素比例</span><span class="mono example-note">火 2 · 土 2 · 風 4 · 水 2</span></div>
+          <div class="element-bar"><span class="fire" style="flex: 2"></span><span class="earth" style="flex: 2"></span><span class="air" style="flex: 4"></span><span class="water" style="flex: 2"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="motion">
+    <div class="sec-head"><div class="eyebrow">Motion</div><h2>動態</h2><p>只有抽牌儀式有戲。順序：洗牌 → 選牌 → 逐張發牌 → 依序翻牌 → 解讀淡入並逐字出現。</p></div>
+    <div class="table-scroll panel">
+      <table class="data-table motion-table">
+        <thead><tr><th>Token</th><th>時間</th><th>用在</th></tr></thead>
+        <tbody>
+          <tr><td>--dur-instant</td><td>80ms</td><td>按鈕按下</td></tr>
+          <tr><td>--dur-fast</td><td>140ms</td><td>hover 顏色</td></tr>
+          <tr><td>--dur-base</td><td>220ms</td><td>展開、淡入</td></tr>
+          <tr><td>--dur-slow</td><td>420ms</td><td>面板進場、發一張牌</td></tr>
+          <tr><td>--dur-flip</td><td>720ms</td><td>翻牌</td></tr>
+          <tr><td>--dur-shuffle</td><td>1200ms</td><td>洗牌</td></tr>
+          <tr><td>--stagger</td><td>90ms</td><td>牌陣逐張間隔</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+  <p class="example-note">檔案：tokens.css · components.css · DESIGN.md（完整規格）</p>
+</main>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  // 主題切換
+  try { var saved = localStorage.getItem('np-theme'); if (saved) { var r = document.getElementById('theme-' + saved); if (r) r.checked = true; apply(saved); } } catch (e) {}
+  function apply(v) { if (v === 'auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', v); paintSwatches(); }
+  document.querySelectorAll('input[name="theme"]').forEach(function (el) {
+    el.addEventListener('change', function () { apply(el.value); try { localStorage.setItem('np-theme', el.value); } catch (e) {} });
+  });
+
+  // 色票
+  document.querySelectorAll('[data-swatches]').forEach(function (g) {
+    g.dataset.swatches.split(',').forEach(function (name) {
+      var d = document.createElement('div'); d.className = 'swatch';
+      d.innerHTML = '<div class="swatch__chip" style="background: var(' + name + ')"></div><span class="swatch__name">' + name + '</span><span class="swatch__val" data-var="' + name + '"></span>';
+      g.appendChild(d);
+    });
+  });
+  function paintSwatches() {
+    var cs = getComputedStyle(root);
+    document.querySelectorAll('[data-var]').forEach(function (s) { s.textContent = cs.getPropertyValue(s.dataset.var).trim(); });
+  }
+  paintSwatches();
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: light)').addEventListener('change', paintSwatches);
+
+  // 牌面示意圖（正式網站換成真正的牌圖）
+  var G = '#cfac68';
+  var arts = {
+    star: '<svg viewBox="0 0 70 80"><g fill="none" stroke="' + G + '" stroke-width="1"><path d="M35 14 L38 30 L52 24 L41 35 L56 40 L41 45 L52 56 L38 50 L35 66 L32 50 L18 56 L29 45 L14 40 L29 35 L18 24 L32 30 Z"/></g><g fill="' + G + '"><circle cx="14" cy="16" r="1.4"/><circle cx="58" cy="14" r="1.2"/><circle cx="60" cy="64" r="1.4"/><circle cx="10" cy="62" r="1"/></g></svg>',
+    sun: '<svg viewBox="0 0 70 80"><g fill="none" stroke="' + G + '" stroke-width="1"><circle cx="35" cy="40" r="12"/><path d="M35 18v-8M35 62v8M13 40H5M57 40h8M19.5 24.5l-5.5-5.5M50.5 55.5l5.5 5.5M50.5 24.5l5.5-5.5M19.5 55.5l-5.5 5.5"/></g></svg>',
+    moon: '<svg viewBox="0 0 70 80"><path d="M42 22a18 18 0 1 0 0 36a14 14 0 1 1 0-36z" fill="none" stroke="' + G + '" stroke-width="1"/><g fill="' + G + '"><circle cx="54" cy="20" r="1.2"/><circle cx="16" cy="66" r="1"/></g></svg>'
+  };
+  document.querySelectorAll('[data-art]').forEach(function (a) { a.innerHTML = arts[a.dataset.art] || ''; });
+
+  // 翻牌示範
+  var flip = document.getElementById('flip-demo');
+  function toggle() { flip.classList.toggle('is-flipped'); }
+  flip.addEventListener('click', toggle);
+  flip.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+
+  // 重新發牌
+  document.getElementById('deal').addEventListener('click', function () {
+    var cards = document.querySelectorAll('#spread .tarot');
+    cards.forEach(function (c) { c.classList.remove('is-dealing', 'is-flipped'); void c.offsetWidth; c.classList.add('is-dealing'); });
+    cards.forEach(function (c, i) { setTimeout(function () { c.classList.add('is-flipped'); }, 600 + i * 300); });
+  });
+
+  // 示範星盤
+  var VS = '︎';
+  var signs = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  var signZh = ['牡羊','金牛','雙子','巨蟹','獅子','處女','天秤','天蠍','射手','摩羯','水瓶','雙魚'];
+  var elem = ['fire','earth','air','water'];
+  var asc = 288.5; // 上升摩羯 18°30′（示意）
+  var planets = [
+    ['☉','太陽',199.7],['☽','月亮',95.2],['☿','水星',186.4],['♀','金星',203.1],['♂','火星',141.8],
+    ['♃','木星',354.6],['♄','土星',30.9],['♅','天王星',308.2],['♆','海王星',299.5],['♇','冥王星',246.3]
+  ];
+  var cx = 200, cy = 200;
+  function pt(lon, r) { var a = (180 + (lon - asc)) * Math.PI / 180; return [cx + r * Math.cos(a), cy - r * Math.sin(a)]; }
+  var NS = 'http://www.w3.org/2000/svg', svg = document.getElementById('wheel');
+  function el(tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text) e.textContent = text; svg.appendChild(e); return e; }
+  var R = { outer: 196, zodiac: 166, house: 146, planet: 120, inner: 92 };
+  el('circle', { cx: cx, cy: cy, r: R.outer, 'class': 'chart__ring chart__ring--zodiac' });
+  el('circle', { cx: cx, cy: cy, r: R.zodiac, 'class': 'chart__ring' });
+  el('circle', { cx: cx, cy: cy, r: R.house, 'class': 'chart__ring' });
+  el('circle', { cx: cx, cy: cy, r: R.inner, 'class': 'chart__ring' });
+  for (var i = 0; i < 12; i++) {
+    var a = pt(i * 30, R.zodiac), b = pt(i * 30, R.outer);
+    el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], 'class': 'chart__house' });
+    var s = pt(i * 30 + 15, (R.zodiac + R.outer) / 2);
+    el('text', { x: s[0], y: s[1], 'class': 'chart__sign chart__sign--' + elem[i % 4] }, signs[i] + VS);
+    // 等宮制（示意）
+    var h0 = asc + i * 30, h1 = pt(h0, R.inner), h2 = pt(h0, R.zodiac);
+    if (i % 3 !== 0) el('line', { x1: h1[0], y1: h1[1], x2: h2[0], y2: h2[1], 'class': 'chart__house' });
+    var hn = pt(h0 + 15, R.inner + 9);
+    el('text', { x: hn[0], y: hn[1], 'class': 'chart__house-num' }, String(i + 1));
+  }
+  [[asc, 'ASC'], [asc + 90, 'IC'], [asc + 180, 'DSC'], [asc + 270, 'MC']].forEach(function (ax) {
+    var p1 = pt(ax[0], R.inner), p2 = pt(ax[0], R.zodiac), l = pt(ax[0], R.outer + 12);
+    el('line', { x1: p1[0], y1: p1[1], x2: p2[0], y2: p2[1], 'class': 'chart__axis' });
+    if (ax[1] === 'ASC' || ax[1] === 'MC') el('text', { x: l[0], y: l[1], 'class': 'chart__axis-label' }, ax[1]);
+  });
+  // 相位
+  var types = [[0, 'neutral', 7], [60, 'harmonious', 5], [120, 'harmonious', 6], [90, 'tense', 6], [180, 'tense', 7]];
+  for (var p = 0; p < planets.length; p++) for (var q = p + 1; q < planets.length; q++) {
+    var d = Math.abs(planets[p][2] - planets[q][2]) % 360; if (d > 180) d = 360 - d;
+    types.forEach(function (t) {
+      if (Math.abs(d - t[0]) <= t[2] && t[0] !== 0) {
+        var A = pt(planets[p][2], R.inner - 2), B = pt(planets[q][2], R.inner - 2);
+        el('line', { x1: A[0], y1: A[1], x2: B[0], y2: B[1], 'class': 'chart__aspect chart__aspect--' + t[1] });
+      }
+    });
+  }
+  // 行星（簡單避讓：太近就往內縮）
+  var placed = [];
+  planets.slice().sort(function (a, b) { return a[2] - b[2]; }).forEach(function (pl) {
+    var r = R.planet;
+    placed.forEach(function (o) { var dd = Math.abs(o[0] - pl[2]); if (dd > 180) dd = 360 - dd; if (dd < 8 && Math.abs(o[1] - r) < 1) r -= 18; });
+    placed.push([pl[2], r]);
+    var dot = pt(pl[2], R.house - 4), g = pt(pl[2], r);
+    el('circle', { cx: dot[0], cy: dot[1], r: 2.2, 'class': 'chart__planet-dot' });
+    el('text', { x: g[0], y: g[1], 'class': 'chart__planet' }, pl[0] + VS);
+  });
+  // 表格
+  var tb = document.querySelector('#planet-table tbody');
+  planets.forEach(function (pl) {
+    var lon = pl[2], si = Math.floor(lon / 30), deg = lon - si * 30, dg = Math.floor(deg), mn = Math.round((deg - dg) * 60);
+    var house = Math.floor((((lon - asc) % 360) + 360) % 360 / 30) + 1;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><span class="mono">' + pl[0] + VS + '</span> ' + pl[1] + '</td><td><span class="chip chip--' + elem[si % 4] + '"><i class="chip__dot"></i>' + signZh[si] + '</span></td><td class="mono">' + dg + '°' + String(mn).padStart(2, '0') + '′</td><td class="mono">' + house + '</td>';
+    tb.appendChild(tr);
+  });
+})();
+</script>
