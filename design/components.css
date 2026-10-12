@@ -1,5 +1,5 @@
 /* ==========================================================================
-   塔羅網站設計系統 · Components  v1.1
+   塔羅網站設計系統 · Components  v2.0
    依賴 tokens.css。只引用 token，不寫死色碼。
    命名：元件 .name、子元素 .name__part、變體 .name--variant、狀態 .is-state
    ========================================================================== */
@@ -9,7 +9,14 @@
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  min-height: 100vh;
+  /* v2：底色上疊星雲光暈，固定不隨捲動 */
+  background:
+    radial-gradient(ellipse 70% 50% at 12% -5%, var(--sky-nebula-1), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 100% 30%, var(--sky-nebula-2), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 110%, var(--sky-nebula-1), transparent 70%),
+    var(--color-bg);
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--text-md);
@@ -85,8 +92,18 @@ a:hover { color: var(--color-accent-hover); }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 /* 主要：金底。一個畫面只放一顆（例：「抽牌」「開始解讀」） */
-.btn--primary { background: var(--color-accent); color: var(--color-text-on-accent); }
-.btn--primary:hover { background: var(--color-accent-hover); color: var(--color-text-on-accent); }
+.btn--primary {
+  position: relative; overflow: hidden;
+  background: var(--gradient-brass); color: var(--color-text-on-accent);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.35) inset, 0 -1px 0 rgb(0 0 0 / 0.15) inset, 0 6px 20px -8px rgb(207 172 104 / 0.6);
+}
+.btn--primary::before { /* 金屬光澤滑過 */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+  translate: -120% 0; transition: translate var(--dur-slow) var(--ease-out);
+}
+.btn--primary:hover { background: var(--gradient-brass-hover); color: var(--color-text-on-accent); box-shadow: 0 1px 0 rgb(255 255 255 / 0.4) inset, 0 8px 28px -8px rgb(207 172 104 / 0.75); }
+.btn--primary:hover::before { translate: 120% 0; }
 .btn--primary:active { background: var(--color-accent-press); }
 
 /* 次要：金框 */
@@ -178,13 +195,16 @@ a:hover { color: var(--color-accent-hover); }
 
 /* ---------- 面板（層次 L1 / L2 / L3） ---------- */
 .panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-subtle);
+  position: relative;
+  /* v2：玻璃面板，讓星空透出；上緣一道細光 */
+  background: var(--glass-highlight), var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-1);
   padding: var(--space-5);
 }
-.panel--raised  { background: var(--color-surface-raised); border-color: var(--color-border); box-shadow: var(--shadow-2); }
+.panel--raised  { background: var(--glass-highlight), var(--glass-bg-strong); border-color: var(--color-border); box-shadow: var(--shadow-2); }
 .panel--overlay { background: var(--color-surface-overlay); border-color: var(--color-border); box-shadow: var(--shadow-3); border-radius: var(--radius-lg); }
 .panel__header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
 
@@ -240,27 +260,24 @@ a:hover { color: var(--color-accent-hover); }
   overflow: hidden;
 }
 
-/* 牌背：深靛底 + 雙線金框 + 中央八芒星。兩種主題都不變。 */
+/* 牌背 v2：深靛底 + 金線紋章（雙框、角飾、日輪八芒星、上下新月、星點）。兩種主題都不變。
+   紋章是內嵌 SVG，底下再疊一層極淡的斜格紋與中央光暈，靠近看有細節、遠看是一個乾淨的徽記。 */
 .tarot__back {
   background:
-    radial-gradient(circle at 50% 50%, rgb(207 172 104 / 0.18) 0 14%, transparent 15%),
-    repeating-linear-gradient(45deg, transparent 0 9px, rgb(207 172 104 / 0.06) 9px 10px),
-    repeating-linear-gradient(-45deg, transparent 0 9px, rgb(207 172 104 / 0.06) 9px 10px),
-    var(--card-back-bg);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 120'%3E%3Crect x='3.5' y='3.5' width='63' height='113' rx='4' fill='none' stroke='%23cfac68' stroke-opacity='.7' stroke-width='.6'/%3E%3Crect x='6.5' y='6.5' width='57' height='107' rx='2.5' fill='none' stroke='%23cfac68' stroke-opacity='.35' stroke-width='.4'/%3E%3Cpath d='M6.5 4.5L8.5 6.5L6.5 8.5L4.5 6.5Z' fill='%23cfac68' fill-opacity='.8'/%3E%3Cpath d='M63.5 4.5L65.5 6.5L63.5 8.5L61.5 6.5Z' fill='%23cfac68' fill-opacity='.8'/%3E%3Cpath d='M6.5 111.5L8.5 113.5L6.5 115.5L4.5 113.5Z' fill='%23cfac68' fill-opacity='.8'/%3E%3Cpath d='M63.5 111.5L65.5 113.5L63.5 115.5L61.5 113.5Z' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='35' cy='60' r='21' fill='none' stroke='%23cfac68' stroke-opacity='.45' stroke-width='.4'/%3E%3Ccircle cx='35' cy='60' r='17' fill='none' stroke='%23cfac68' stroke-opacity='.6' stroke-width='.5'/%3E%3Ccircle cx='54.00' cy='60.00' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='51.45' cy='69.50' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='44.50' cy='76.45' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='35.00' cy='79.00' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='25.50' cy='76.45' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='18.55' cy='69.50' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='16.00' cy='60.00' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='18.55' cy='50.50' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='25.50' cy='43.55' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='35.00' cy='41.00' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='44.50' cy='43.55' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Ccircle cx='51.45' cy='50.50' r='.7' fill='%23cfac68' fill-opacity='.8'/%3E%3Cline x1='56.32' y1='62.81' x2='59.79' y2='63.26' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='54.86' y1='68.23' x2='56.25' y2='68.80' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='52.06' y1='73.09' x2='54.83' y2='75.22' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='48.09' y1='77.06' x2='49.00' y2='78.25' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='43.23' y1='79.86' x2='44.57' y2='83.10' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='37.81' y1='81.32' x2='38.00' y2='82.80' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='32.19' y1='81.32' x2='31.74' y2='84.79' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='26.77' y1='79.86' x2='26.20' y2='81.25' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='21.91' y1='77.06' x2='19.78' y2='79.83' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='17.94' y1='73.09' x2='16.75' y2='74.00' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='15.14' y1='68.23' x2='11.90' y2='69.57' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='13.68' y1='62.81' x2='12.20' y2='63.00' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='13.68' y1='57.19' x2='10.21' y2='56.74' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='15.14' y1='51.77' x2='13.75' y2='51.20' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='17.94' y1='46.91' x2='15.17' y2='44.78' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='21.91' y1='42.94' x2='21.00' y2='41.75' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='26.77' y1='40.14' x2='25.43' y2='36.90' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='32.19' y1='38.68' x2='32.00' y2='37.20' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='37.81' y1='38.68' x2='38.26' y2='35.21' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='43.23' y1='40.14' x2='43.80' y2='38.75' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='48.09' y1='42.94' x2='50.22' y2='40.17' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='52.06' y1='46.91' x2='53.25' y2='46.00' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='54.86' y1='51.77' x2='58.10' y2='50.43' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cline x1='56.32' y1='57.19' x2='57.80' y2='57.00' stroke='%23cfac68' stroke-opacity='.5' stroke-width='.4'/%3E%3Cpolygon points='35.00,47.00 36.61,56.12 40.66,54.34 38.88,58.39 48.00,60.00 38.88,61.61 40.66,65.66 36.61,63.88 35.00,73.00 33.39,63.88 29.34,65.66 31.12,61.61 22.00,60.00 31.12,58.39 29.34,54.34 33.39,56.12' fill='%23cfac68' fill-opacity='.9'/%3E%3Ccircle cx='35' cy='60' r='2' fill='%2310142b'/%3E%3Cpath d='M29 24 A6 6 0 0 0 41 24 A7.5 7.5 0 0 1 29 24Z' fill='%23cfac68' fill-opacity='.75' transform='rotate%28180 35 24%29'/%3E%3Cpath d='M29 96 A6 6 0 0 0 41 96 A7.5 7.5 0 0 1 29 96Z' fill='%23cfac68' fill-opacity='.75' transform='rotate%280 35 96%29'/%3E%3Ccircle cx='16' cy='20' r='0.6' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='54' cy='18' r='0.7' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='14' cy='44' r='0.5' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='57' cy='40' r='0.5' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='13' cy='78' r='0.5' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='56' cy='82' r='0.6' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='18' cy='100' r='0.7' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='52' cy='102' r='0.5' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='35' cy='14' r='0.5' fill='%23cfac68' fill-opacity='.7'/%3E%3Ccircle cx='35' cy='106' r='0.5' fill='%23cfac68' fill-opacity='.7'/%3E%3C/svg%3E") center / 100% 100% no-repeat,
+    radial-gradient(circle at 50% 50%, rgb(207 172 104 / 0.16), transparent 45%),
+    repeating-linear-gradient(45deg, transparent 0 7px, rgb(207 172 104 / 0.035) 7px 8px),
+    repeating-linear-gradient(-45deg, transparent 0 7px, rgb(207 172 104 / 0.035) 7px 8px),
+    linear-gradient(160deg, #161b3a, var(--card-back-bg) 55%, #0a0d1f);
   border: 1px solid var(--card-back-line);
 }
-.tarot__back::before { /* 內框 */
-  content: ""; position: absolute; inset: 6%;
-  border: 1px solid var(--card-back-line);
-  border-radius: calc(var(--radius-card) - 4px);
-  box-shadow: inset 0 0 0 3px var(--card-back-bg), inset 0 0 0 4px rgb(207 172 104 / 0.25);
+.tarot__back::after { /* 斜向金屬反光，hover 時滑過 */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgb(255 240 210 / 0.10) 48%, transparent 60%);
+  background-size: 250% 100%; background-position: 100% 0;
+  transition: background-position var(--dur-slow) var(--ease-out);
 }
-.tarot__back::after { /* 八芒星 */
-  content: ""; position: absolute; left: 50%; top: 50%;
-  width: 26%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  background: var(--card-back-ink);
-  clip-path: polygon(50% 0, 58% 34%, 85% 15%, 66% 42%, 100% 50%, 66% 58%, 85% 85%, 58% 66%, 50% 100%, 42% 66%, 15% 85%, 34% 58%, 0 50%, 34% 42%, 15% 15%, 42% 34%);
-}
+.tarot.is-interactive:hover .tarot__back::after { background-position: 0 0; }
 
 /* 牌面：紙色底 + 細內框，上方羅馬數字、中間圖、下方英文牌名 + 中文 */
 .tarot__face {
@@ -322,7 +339,8 @@ a:hover { color: var(--color-accent-hover); }
    </article>
    ========================================================================== */
 .reading {
-  background: var(--color-surface-raised);
+  background: var(--glass-highlight), var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-2);
@@ -513,6 +531,103 @@ a:hover { color: var(--color-accent-hover); }
 /* 原生 dialog 彈窗 */
 dialog.modal { color: var(--color-text); margin: auto; max-height: calc(100dvh - 2 * var(--gutter)); overflow: auto; }
 dialog.modal::backdrop { background: var(--color-scrim); }
+
+/* ==========================================================================
+   v2.0 抽牌儀式
+   ========================================================================== */
+.tarot { position: relative; }
+
+/* 牌位空格：細金虛線 + 置中羅馬數字 */
+.spread__empty {
+  position: relative; display: grid; place-items: center;
+  border: 1px dashed var(--table-line);
+  background: rgb(207 172 104 / 0.025);
+}
+.spread__empty::after {
+  content: attr(data-n);
+  font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: 0.1em;
+  color: var(--color-accent-line);
+}
+
+/* 儀式桌面：洗牌、切牌、扇形都在這裡發生 */
+.ritual { display: grid; gap: var(--space-4); }
+.ritual__table {
+  --fan-card: clamp(3rem, 6.2vw, 5.25rem);
+  position: relative;
+  min-height: 14rem;
+  border-radius: var(--radius-lg);
+  background: var(--table-bg);
+  transition: height var(--dur-slow) var(--ease-out), opacity var(--dur-slow) var(--ease-out);
+}
+.ritual__table::before { /* 桌面上一圈極淡的星盤刻度，當作桌布紋路 */
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: min(36rem, 90%); aspect-ratio: 1; translate: -50% -50%;
+  border-radius: 50%;
+  border: 1px solid var(--table-line);
+  outline: 1px solid var(--table-line); outline-offset: -1.5rem;
+  mask: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+  pointer-events: none; opacity: 0.6;
+}
+.ritual__card {
+  position: absolute; top: 28px; left: calc(50% - var(--fan-card) / 2);
+  width: var(--fan-card);
+  will-change: transform;
+}
+.ritual__card .tarot__inner { box-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 18px -10px rgb(0 0 0 / 0.8); }
+.ritual__card.is-pile { cursor: pointer; }
+.ritual__card.is-pile-hover .tarot__inner { box-shadow: 0 1px 2px rgb(0 0 0 / 0.5), var(--glow-accent); }
+.ritual__fan .tarot__inner { transition: translate var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out); }
+.ritual__fan.is-interactive:hover .tarot__inner,
+.ritual__fan:focus-visible .tarot__inner { translate: 0 -22px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.5), var(--glow-accent); }
+.ritual__fan:focus-visible { outline: none; }
+.ritual__fan.is-taken { opacity: 0; pointer-events: none; transition: opacity var(--dur-base) var(--ease-out); }
+.ritual.is-closed .ritual__table { opacity: 0; height: 0 !important; min-height: 0; overflow: hidden; }
+.ritual.is-closed .ritual__bar { display: none; }
+
+.ritual__bar { display: flex; justify-content: center; align-items: center; gap: var(--space-4); flex-wrap: wrap; min-height: 2.25rem; }
+.ritual__status {
+  font-family: var(--font-serif); font-size: var(--text-md); color: var(--color-text-secondary);
+  text-align: center; letter-spacing: var(--tracking-wide);
+}
+.ritual[data-stage="shuffle"] .ritual__status::before,
+.ritual[data-stage="cut"] .ritual__status::before { content: "✦ "; color: var(--color-accent); animation: pulse 1.6s ease-in-out infinite; }
+
+/* 飛行中的牌（從扇形飛到牌位） */
+.ritual__fly { position: fixed; z-index: var(--z-overlay); pointer-events: none; transform-origin: 50% 50%; }
+.ritual__fly .tarot__inner { box-shadow: var(--shadow-card), var(--glow-accent); }
+.tarot.is-arriving { visibility: hidden; }
+.tarot.is-landed { animation: land var(--dur-slow) var(--ease-spring); }
+
+/* 翻牌：抬起 → 翻面 → 金光一閃 → 一道光掃過牌面 */
+.tarot.is-revealing { animation: reveal-lift var(--dur-flip) var(--ease-in-out); z-index: 2; }
+.tarot.is-revealing::before {
+  content: ""; position: absolute; inset: -35%; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, var(--glow-burst), rgb(207 172 104 / 0.15) 35%, transparent 62%);
+  opacity: 0; animation: burst 1100ms var(--ease-out) calc(var(--dur-flip) * 0.45);
+}
+.tarot__face::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgb(255 248 230 / 0.55) 48%, transparent 62%);
+  background-size: 260% 100%; background-position: 120% 0; opacity: 0;
+}
+.tarot.is-revealing .tarot__face::after { animation: sheen 900ms var(--ease-out) calc(var(--dur-flip) * 0.55); }
+.spread .tarot.is-flipped .tarot__inner { box-shadow: var(--shadow-card), var(--glow-soft); }
+
+@keyframes reveal-lift { 0% { transform: none; } 45% { transform: translateY(-16px) scale(1.08); } 100% { transform: none; } }
+@keyframes burst  { 0% { opacity: 0; transform: scale(0.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: scale(1.25); } }
+@keyframes sheen  { 0% { opacity: 1; background-position: 120% 0; } 100% { opacity: 1; background-position: -60% 0; } }
+@keyframes land   { 0% { transform: translateY(-6px) scale(1.04); } 100% { transform: none; } }
+@keyframes pulse  { 50% { opacity: 0.35; } }
+
+/* 夜空星點（canvas，由 js/sky.js 畫） */
+.sky { position: fixed; inset: 0; z-index: -1; pointer-events: none; width: 100%; height: 100%; }
+
+/* 頁首標題組：eyebrow + 大標 + 金色細線，置中 */
+.title-block { display: grid; justify-items: center; gap: var(--space-3); text-align: center; }
+.title-block h1 { font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl)); letter-spacing: 0.04em; }
+.title-block__rule { width: 8rem; height: 1px; background: var(--gradient-rule); position: relative; }
+.title-block__rule::after { content: "✦"; position: absolute; left: 50%; top: 50%; translate: -50% -52%; font-size: 10px; color: var(--color-accent); background: var(--color-bg); padding-inline: 6px; }
+.title-block p { color: var(--color-text-secondary); max-width: 30em; line-height: var(--leading-body); }
 
 /* ---------- 動畫 ---------- */
 @keyframes spin    { to { transform: rotate(360deg); } }

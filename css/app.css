@@ -9,12 +9,14 @@
 /* ---------- 頂部導覽：64px、L0 底、sticky ---------- */
 .topbar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: var(--z-sticky);
-  background: var(--color-bg);
+  background: rgb(8 10 20 / 0.72);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border-subtle);
 }
 .topbar__inner { display: flex; align-items: center; gap: var(--space-5); min-height: 4rem; }
-.brand { display: flex; align-items: baseline; gap: var(--space-2); margin-right: auto; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: var(--space-2); margin-right: auto; white-space: nowrap; }
 .brand b { font-family: var(--font-display); font-weight: var(--weight-regular); letter-spacing: var(--tracking-caps); font-size: var(--text-md); }
+.brand__mark { width: 1.375rem; height: 1.375rem; color: var(--color-accent); flex: none; }
 .brand span { font-family: var(--font-serif); color: var(--color-text-muted); font-size: var(--text-sm); }
 .topbar__tabs { border-bottom: 0; align-self: stretch; align-items: stretch; }
 .topbar__tabs .tabs__tab { padding-block: 0; margin-bottom: -1px; }
@@ -32,7 +34,11 @@
 .site-foot { font-size: var(--text-xs); padding-block: var(--space-5) var(--space-7); border-top: 1px solid var(--color-border-subtle); }
 
 /* ---------- 抽牌設定 ---------- */
-.setup { max-width: var(--container-narrow); }
+.tarot-hero { margin-bottom: var(--space-7); }
+.setup { max-width: 40rem; margin-inline: auto; padding: var(--space-6); gap: var(--space-5); }
+.setup .segmented--wrap { width: 100%; grid-template-columns: repeat(6, 1fr); }
+.setup .textarea { font-family: var(--font-serif); font-size: var(--text-lg); line-height: var(--leading-snug); }
+.setup__meta { padding-top: var(--space-4); border-top: 1px solid var(--color-border-subtle); }
 .setup__foot { gap: var(--space-5); }
 .setup__spacer { flex: 1; }
 .setup__hint { font-size: var(--text-sm); }
@@ -40,9 +46,12 @@
 
 
 /* ---------- 牌陣與牌堆 ---------- */
-.draw { margin-top: var(--space-8); }
+.draw { margin-top: var(--space-8); scroll-margin-top: 5rem; }
+.draw__head { margin-bottom: var(--space-6); }
+.draw__head p { font-family: var(--font-serif); }
 .draw .spread { min-height: calc(var(--card-w-md) * 12 / 7 + 3rem); }
-.draw__actions { justify-content: center; margin-block: var(--space-6) var(--space-7); }
+.draw__actions { justify-content: center; margin-block: var(--space-5) var(--space-5); }
+.draw__actions:has(.btn[disabled]) { display: none; }
 .spread__slot .tarot { cursor: pointer; }
 .spread__label { text-align: center; }
 
@@ -119,6 +128,8 @@
   .form-row { grid-template-columns: 1fr; }
   .card-detail { grid-template-columns: 1fr; justify-items: center; }
   .spread { gap: var(--space-4) var(--space-3); }
+  .setup { padding: var(--space-5); }
+  .setup .segmented--wrap { grid-template-columns: repeat(3, 1fr); }
   .setup__foot .btn--primary { width: 100%; }
   .setup__spacer { display: none; }
 }

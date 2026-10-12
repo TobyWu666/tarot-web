@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-theme="dark">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080a14">
   <title>星語塔羅</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +15,7 @@
 <body>
   <header class="topbar">
     <div class="container topbar__inner">
-      <div class="brand"><b>NIGHT PASSAGE</b><span>星語塔羅</span></div>
+      <div class="brand"><svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width=".8" opacity=".6"/><path d="M12 3.5l1.6 6.9 6.9 1.6-6.9 1.6L12 20.5l-1.6-6.9L3.5 12l6.9-1.6z" fill="currentColor"/></svg><b>NIGHT PASSAGE</b><span>星語塔羅</span></div>
       <nav class="tabs topbar__tabs" role="tablist" aria-label="主功能">
         <button class="tabs__tab" role="tab" data-tab="tarot" aria-selected="true">塔羅</button>
         <button class="tabs__tab" role="tab" data-tab="chart" aria-selected="false">星盤</button>
@@ -30,9 +31,11 @@
   <main class="container page">
     <!-- 塔羅 -->
     <section id="view-tarot" class="view is-active" role="tabpanel">
-      <div class="page-head">
+      <div class="title-block tarot-hero">
         <div class="eyebrow">Tarot Reading</div>
         <h1>你想問什麼？</h1>
+        <div class="title-block__rule"></div>
+        <p>把問題放在心上。洗牌、切牌，再從展開的牌中憑直覺選出你的牌。</p>
       </div>
 
       <div class="panel stack setup">
@@ -50,7 +53,7 @@
           <label class="toggle"><input type="checkbox" id="allowReversed" checked><span>包含逆位</span></label>
           <label class="toggle"><input type="checkbox" id="useProfile" checked><span>結合星盤與血型</span></label>
           <span class="setup__spacer"></span>
-          <button class="btn btn--primary" id="shuffleBtn">洗牌</button>
+          <button class="btn btn--primary btn--lg" id="shuffleBtn">洗牌</button>
         </div>
         <div class="setup__meta">
           <p id="todayHint" class="text-muted setup__hint"></p>
@@ -59,9 +62,11 @@
       </div>
 
       <section id="drawArea" class="draw" hidden>
-        <div class="section-head">
-          <div><div class="eyebrow" id="spreadEyebrow">Spread</div><h2 id="spreadTitle"></h2></div>
-          <p class="text-secondary" id="drawInstruction"></p>
+        <div class="title-block draw__head">
+          <div class="eyebrow" id="spreadEyebrow">Spread</div>
+          <h2 id="spreadTitle"></h2>
+          <div class="title-block__rule"></div>
+          <p id="drawInstruction"></p>
         </div>
         <div class="spread" id="slots"></div>
         <div class="cluster draw__actions">
@@ -272,6 +277,8 @@
   <script>window.TAROT_CONFIG = window.TAROT_CONFIG || {};</script>
   <script src="config.local.js" onerror="void 0"></script>
   <script src="js/gemini.js"></script>
+  <script src="js/sky.js"></script>
+  <script src="js/ritual.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

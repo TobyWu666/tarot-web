@@ -1,8 +1,9 @@
 /* ==========================================================================
-   塔羅網站設計系統 · Design Tokens  v1.1
+   塔羅網站設計系統 · Design Tokens  v2.0
    名稱：「夜航 Night Passage」
    理念：深靛夜空為底，黃銅金為唯一強調色，月石白為文字。
-         層次靠「表面明度 + 細邊框 + 陰影」三者一起遞進，不靠花俏裝飾。
+         層次靠「表面明度 + 細邊框 + 陰影」三者一起遞進。
+   v2.0：加入夜空氛圍（星雲光暈、星點）、玻璃面板、金屬光澤與完整抽牌儀式動態。
    預設深色；淺色主題用 [data-theme="light"] 或系統偏好切換。
    所有元件只能引用這裡的變數，不得寫死色碼。
    ========================================================================== */
@@ -248,6 +249,40 @@
   --card-face-line: rgb(26 30 56 / 0.35);
 }
 
+/* ---------- v2.0 氛圍與質感 ---------- */
+:root {
+  /* 夜空背景：底色上疊兩團星雲光，只用在 body 背景 */
+  --sky-nebula-1: rgb(88 72 160 / 0.22);   /* 紫，左上 */
+  --sky-nebula-2: rgb(44 86 150 / 0.18);   /* 藍，右側 */
+  --sky-nebula-3: rgb(207 172 104 / 0.06); /* 金，桌面中央 */
+  --sky-star: 236 230 214;                  /* 星點 rgb，給 canvas 用 */
+
+  /* 玻璃面板：半透明 + 模糊，讓星空透出來 */
+  --glass-bg: rgb(18 22 48 / 0.62);
+  --glass-bg-strong: rgb(22 27 58 / 0.82);
+  --glass-blur: 14px;
+  --glass-highlight: linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 40%);
+
+  /* 金屬金：主按鈕、標題裝飾線 */
+  --gradient-brass: linear-gradient(180deg, #ecd39c 0%, #cfac68 48%, #a9853f 100%);
+  --gradient-brass-hover: linear-gradient(180deg, #f4e0b2 0%, #dcbb78 48%, #b8934a 100%);
+  --gradient-rule: linear-gradient(90deg, transparent, var(--color-accent-line), transparent);
+  --glow-soft: 0 0 40px -8px rgb(207 172 104 / 0.35);
+  --glow-burst: rgb(236 211 156 / 0.55);
+
+  /* 抽牌桌面 */
+  --table-bg: radial-gradient(ellipse 60% 70% at 50% 45%, rgb(207 172 104 / 0.07), transparent 70%),
+              radial-gradient(ellipse 80% 90% at 50% 50%, rgb(34 40 72 / 0.55), rgb(13 16 32 / 0) 75%);
+  --table-line: rgb(207 172 104 / 0.18);
+
+  /* 儀式動態 */
+  --dur-riffle: 900ms;   /* 一次鴿尾洗牌 */
+  --dur-cut: 650ms;      /* 切牌分疊、合疊 */
+  --dur-fan: 1100ms;     /* 展開扇形 */
+  --dur-fly: 760ms;      /* 抽出的牌飛到牌位 */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* 輕微回彈：牌落位 */
+}
+
 /* 手機牌尺寸（v1.1 收錄自建置端） */
 @media (max-width: 48rem) {
   :root { --card-w-sm: 3.25rem; --card-w-md: 6.25rem; --card-w-lg: 10rem; }
@@ -257,5 +292,24 @@
   :root {
     --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms;
     --dur-flip: 0ms; --dur-shuffle: 0ms; --stagger: 0ms;
+    --dur-riffle: 0ms; --dur-cut: 0ms; --dur-fan: 0ms; --dur-fly: 0ms;
   }
+}
+
+/* v2.0 淺色主題的氛圍 token（網站目前固定深色，保留給日後切換） */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --sky-nebula-1: rgb(138 120 210 / 0.14); --sky-nebula-2: rgb(110 150 210 / 0.12); --sky-nebula-3: rgb(138 108 52 / 0.06);
+    --sky-star: 120 110 160;
+    --glass-bg: rgb(255 255 255 / 0.7); --glass-bg-strong: rgb(255 255 255 / 0.86);
+    --glass-highlight: linear-gradient(180deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 40%);
+    --table-line: rgb(138 108 52 / 0.22);
+  }
+}
+:root[data-theme="light"] {
+  --sky-nebula-1: rgb(138 120 210 / 0.14); --sky-nebula-2: rgb(110 150 210 / 0.12); --sky-nebula-3: rgb(138 108 52 / 0.06);
+  --sky-star: 120 110 160;
+  --glass-bg: rgb(255 255 255 / 0.7); --glass-bg-strong: rgb(255 255 255 / 0.86);
+  --glass-highlight: linear-gradient(180deg, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 40%);
+  --table-line: rgb(138 108 52 / 0.22);
 }

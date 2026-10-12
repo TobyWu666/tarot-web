@@ -261,46 +261,61 @@
     shuffleBtn.classList.toggle('btn--secondary', stage !== 'setup');
   }
 
+  // 抽牌儀式：洗牌 → 切牌 → 扇形選牌（動畫在 js/ritual.js）
+  let ritual = null;
   function renderDeck() {
-    const el = $('#deck');
-    el.className = 'deck';
-    el.innerHTML = session.shuffled.map((c, i) => tarotHtml(null, { size: 'sm', extra: 'is-interactive', i })).join('');
-    void el.offsetWidth;
-    el.classList.add('is-shuffling');
-    [...el.children].forEach((node, i) => {
-      node.setAttribute('role', 'button'); node.tabIndex = 0;
-      node.setAttribute('aria-label', '第 ' + (i + 1) + ' 張牌');
-      const go = () => pick(i, node);
-      node.addEventListener('click', go);
-      node.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    if (ritual) ritual.destroy();
+    const sp = SPREADS[session.spreadKey];
+    const s = session;
+    ritual = window.Ritual.mount($('#deck'), {
+      total: s.shuffled.length,
+      fanText: `從扇形中選出${COUNT_ZH[sp.pos.length] || sp.pos.length}張牌。`,
+      // 切牌：依選的那疊，從那一段隨機切開，整副牌轉一圈
+      onCut(pile) {
+        const n = s.shuffled.length, third = Math.floor(n / 3);
+        const cut = pile * third + rnd(third);
+        s.shuffled = s.shuffled.slice(cut).concat(s.shuffled.slice(0, cut));
+      },
+      onFan() { if (session === s) renderSlots(); },
+      onPick(i, node) { if (session === s) pick(i, node); },
     });
   }
 
   function pick(i, node) {
     const sp = SPREADS[session.spreadKey];
     if (session.picks.length >= sp.pos.length || node.classList.contains('is-taken')) return;
-    node.classList.add('is-taken');
-    session.picks.push({ card: session.shuffled[i], reversed: session.allowRev && rnd(100) < 30, revealed: false, fresh: true });
+    ritual.take(node);
+    const p = { card: session.shuffled[i], reversed: session.allowRev && rnd(100) < 30, revealed: false, fresh: true, flying: true };
+    session.picks.push(p);
+    const idx = session.picks.length - 1;
     renderSlots();
+    const slotCard = () => $(`#slots [data-idx="${idx}"] .tarot`);
+    const target = slotCard();
+    if (target) window.Ritual.fly(node, target).then(() => {
+      p.flying = false;
+      const t = slotCard();
+      if (t) { t.classList.remove('is-arriving'); t.classList.add('is-landed'); }
+    });
     if (session.picks.length === sp.pos.length) {
-      $('#deck').classList.add('is-complete');
-      $('#slots').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      ritual.say('牌都選好了。點牌翻開，或按「依序翻牌」。');
+      setTimeout(() => { ritual.close(); $('#slots').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 800);
     }
   }
 
   function renderSlots() {
     const sp = SPREADS[session.spreadKey];
     const left = sp.pos.length - session.picks.length;
+    const stage = $('#deck').dataset.stage;
     $('#drawInstruction').textContent = left > 0
-      ? `想著你的問題，從下方牌堆選出${COUNT_ZH[left] || left}張牌。`
+      ? (stage === 'pick' ? `想著你的問題，從下方扇形選出${COUNT_ZH[left] || left}張牌。` : '先洗牌、切牌，牌會在下方展開。')
       : (session.picks.every((p) => p.revealed) ? '全部翻開了。' : '點牌翻開，或按「依序翻牌」。');
     const slots = $('#slots');
     slots.className = 'spread spread--' + session.spreadKey;
     slots.innerHTML = sp.pos.map((pos, idx) => {
       const p = session.picks[idx];
       const label = `<span class="spread__label"><b>${esc(pos)}</b>${p && p.revealed ? esc(p.card.zh) + (p.reversed ? '・逆位' : '') : String(idx + 1).padStart(2, '0')}</span>`;
-      if (!p) return `<div class="spread__slot"><div class="spread__empty"></div>${label}</div>`;
-      return `<div class="spread__slot" data-idx="${idx}">${tarotHtml(p.card, { flipped: p.revealed, reversed: p.reversed, extra: p.fresh ? 'is-dealing' : '' })}${label}</div>`;
+      if (!p) return `<div class="spread__slot"><div class="spread__empty" data-n="${ROMAN[idx]}"></div>${label}</div>`;
+      return `<div class="spread__slot" data-idx="${idx}">${tarotHtml(p.card, { flipped: p.revealed, reversed: p.reversed, extra: (p.fresh || p.flying) ? 'is-arriving' : '' })}${label}</div>`;
     }).join('');
     session.picks.forEach((p) => { p.fresh = false; });
     slots.querySelectorAll('[data-idx]').forEach((el) => {
@@ -315,10 +330,14 @@
     $('#revealAll').disabled = !(left === 0 && session.picks.some((p) => !p.revealed));
   }
 
-  // 翻牌：先加 class 讓動畫跑完，再重畫標籤
+  const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+
+  // 翻牌：抬起、翻面、金光一閃（is-revealing），動畫跑完再拿掉
   function flip(p, slotEl) {
     p.revealed = true;
-    slotEl.querySelector('.tarot').classList.add('is-flipped');
+    const t = slotEl.querySelector('.tarot');
+    t.classList.add('is-flipped', 'is-revealing');
+    setTimeout(() => t.classList.remove('is-revealing'), 1400);
     const lbl = slotEl.querySelector('.spread__label');
     lbl.innerHTML = `<b>${esc(lbl.querySelector('b').textContent)}</b>${esc(p.card.zh)}${p.reversed ? '・逆位' : ''}`;
     $('#revealAll').disabled = !session.picks.some((x) => !x.revealed);
@@ -330,7 +349,7 @@
     let k = 0;
     els.forEach((el) => {
       const p = session.picks[+el.dataset.idx];
-      if (!p.revealed) setTimeout(() => flip(p, el), 300 * k++);
+      if (!p.revealed) setTimeout(() => flip(p, el), 520 * k++);
     });
   });
 
@@ -339,7 +358,7 @@
       session.finished = true;
       $('#revealAll').hidden = true;
       $('#drawInstruction').textContent = '全部翻開了。';
-      setTimeout(showResult, 500);
+      setTimeout(showResult, 1300);
       saveHistory();
     }
   }
